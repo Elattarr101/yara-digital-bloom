@@ -85,7 +85,7 @@ const Index = () => {
               We Create Digital Experiences That Drive Results
             </h1>
             
-            <p className="text-xl sm:text-2xl lg:text-3xl text-background/90 max-w-3xl animate-fade-in [animation-delay:200ms]">
+            <p className="text-xl sm:text-2xl lg:text-3xl text-background/90 max-w-3xl animate-fade-in [animation-delay:200ms] select-none">
               Transform your business with data-driven marketing strategies and stunning design that converts visitors into customers
             </p>
             
