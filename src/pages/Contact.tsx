@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { enhancedContactFormSchema, type EnhancedContactFormData, securityValidation, validationUtils } from '@/utils/validation';
+import { advancedRateLimit } from '@/utils/advanced-rate-limiting';
+import { securityMonitor } from '@/utils/security-monitoring';
+import { performanceMonitor } from '@/utils/performance-monitoring';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,14 +43,29 @@ const Contact = () => {
   });
 
   const onSubmit = async (values: EnhancedContactFormData) => {
+    const timer = performanceMonitor.startTimer('contact_form_submission');
     setIsSubmitting(true);
     setSubmissionError(null);
     
     try {
-      // Enhanced security checks
-      const rateLimit = securityValidation.checkRateLimit(values.email, 3, 15 * 60 * 1000); // 3 attempts per 15 minutes
+      // Enhanced rate limiting check
+      const rateLimit = advancedRateLimit.checkContactForm(values.email);
       if (!rateLimit.allowed) {
-        throw new Error(`Too many attempts. Please wait ${rateLimit.remainingTime} minutes before trying again.`);
+        const minutes = Math.ceil((rateLimit.retryAfter || 0) / 60000);
+        throw new Error(`Too many attempts. Please wait ${minutes} minutes before trying again.`);
+      }
+
+      // Additional security validation
+      const suspiciousInputs = [values.fullName, values.projectDetails, values.companyName].filter(Boolean);
+      for (const input of suspiciousInputs) {
+        if (securityValidation.containsSQLInjection(input) ||
+            securityValidation.containsXSS(input)) {
+          securityMonitor.reportSuspiciousActivity(
+            'malicious_form_input',
+            { field: 'contact_form', inputLength: input.length }
+          );
+          throw new Error('Invalid content detected. Please review your submission.');
+        }
       }
 
       // Sanitize inputs
@@ -77,6 +95,19 @@ const Contact = () => {
 
       setShowSuccessModal(true);
       form.reset();
+      
+      // Track successful submission
+      performanceMonitor.markFeatureUsage('contact_form_success');
+      securityMonitor.logEvent({
+        type: 'suspicious_activity',
+        severity: 'low',
+        details: { 
+          reason: 'successful_form_submission',
+          form_type: 'contact'
+        }
+      });
+      
+      const duration = timer();
       toast({
         title: "Message sent successfully!",
         description: "We'll get back to you within 24 hours. Check your email for confirmation.",
@@ -86,6 +117,21 @@ const Contact = () => {
       const errorMessage = error.message || 'Something went wrong. Please try again later.';
       setSubmissionError(errorMessage);
       
+      // Track form errors
+      performanceMonitor.reportCustomError(`Contact form error: ${errorMessage}`, 'medium', {
+        form_type: 'contact',
+        error_type: 'submission_failed'
+      });
+      
+      securityMonitor.logEvent({
+        type: 'suspicious_activity',
+        severity: 'medium',
+        details: { 
+          reason: 'form_submission_error',
+          error: errorMessage.substring(0, 100)
+        }
+      });
+      
       toast({
         title: "Error sending message",
         description: errorMessage,
@@ -93,6 +139,7 @@ const Contact = () => {
       });
     } finally {
       setIsSubmitting(false);
+      timer(); // Complete timing measurement
     }
   };
 
