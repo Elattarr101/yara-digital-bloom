@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useInView, useAnimation, useMotionValue, useSpring } from 'framer-motion';
 
+// Check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined';
+
 // Hook for scroll-triggered animations
 export const useScrollAnimation = (threshold = 0.1, triggerOnce = true) => {
   const controls = useAnimation();
@@ -28,6 +31,8 @@ export const useParallax = (multiplier = 0.5) => {
   const ySmooth = useSpring(y, { damping: 50, stiffness: 400 });
 
   useEffect(() => {
+    if (!isBrowser) return;
+    
     const updateY = () => {
       const scrollY = window.scrollY;
       y.set(scrollY * multiplier);
@@ -120,6 +125,7 @@ export const slideInFromRight = {
 
 // Check for reduced motion preference
 export const shouldReduceMotion = () => {
+  if (!isBrowser) return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 };
 
