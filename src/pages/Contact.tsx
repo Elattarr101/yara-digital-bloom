@@ -15,6 +15,7 @@ import { useScrollAnimation, fadeInUp, fadeInLeft, fadeInRight, staggerContainer
 import Layout from '../components/Layout';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import SEO from '@/components/SEO';
 
 const contactFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -87,6 +88,13 @@ const Contact = () => {
 
   return (
     <Layout>
+      <SEO
+        title="Contact Yara - Get Your Free Digital Marketing Consultation | Start Today"
+        description="Ready to transform your business? Contact Yara for expert digital marketing, web design, and branding services. Free consultation available. Let's grow together!"
+        keywords="contact us, free consultation, digital marketing consultation, web design quote, get started, business growth"
+        url="https://yourdomain.com/contact"
+        canonical="https://yourdomain.com/contact"
+      />
       <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
         <div className="container mx-auto px-4">
           <motion.div 

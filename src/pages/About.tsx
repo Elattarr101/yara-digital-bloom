@@ -3,6 +3,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Lightbulb, Target, Handshake, Sparkles, Linkedin, Twitter } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import SEO from '@/components/SEO';
+import OptimizedImage from '@/components/OptimizedImage';
 
 const About = () => {
   const [counters, setCounters] = useState({
@@ -136,6 +138,13 @@ const About = () => {
 
   return (
     <Layout>
+      <SEO
+        title="About Yara - Your Trusted Digital Marketing Partners | Our Story & Team"
+        description="Learn about Yara's mission to transform businesses through innovative digital marketing, web design, and branding solutions. Meet our expert team and discover our values."
+        keywords="about us, digital marketing team, agency story, web design experts, marketing professionals, company values"
+        url="https://yourdomain.com/about"
+        canonical="https://yourdomain.com/about"
+      />
       {/* Page Hero */}
       <section className="relative pt-24 pb-16 bg-gradient-to-br from-muted/50 to-background overflow-hidden">
         {/* Background Pattern */}

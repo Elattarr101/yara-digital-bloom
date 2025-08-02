@@ -2,6 +2,8 @@ import { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import SEO from '@/components/SEO';
+import OptimizedImage from '@/components/OptimizedImage';
 
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -97,6 +99,13 @@ const Portfolio = () => {
 
   return (
     <Layout>
+      <SEO
+        title="Portfolio - Our Digital Marketing & Web Design Success Stories | Yara Agency"
+        description="Explore our portfolio of successful digital marketing campaigns, stunning web designs, and transformative branding projects. See how we've helped businesses grow."
+        keywords="portfolio, case studies, web design examples, digital marketing results, branding projects, client success stories"
+        url="https://yourdomain.com/portfolio"
+        canonical="https://yourdomain.com/portfolio"
+      />
       {/* Page Intro */}
       <section className="section-padding bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(120,119,198,0.1),transparent_50%)]"></div>

@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { useScrollAnimation, fadeInUp, staggerContainer, scaleIn, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
 import AnimatedCounter from '@/components/animations/AnimatedCounter';
+import SEO from '@/components/SEO';
 import heroImage from '@/assets/hero-marketing.jpg';
 
 const Index = () => {
@@ -71,6 +72,13 @@ const Index = () => {
 
   return (
     <Layout>
+      <SEO
+        title="Yara - Digital Marketing & Web Design Agency | Transform Your Business Online"
+        description="Transform your business with our expert digital marketing, web design, and branding services. We help businesses grow through strategic online presence and creative solutions."
+        keywords="digital marketing agency, web design, branding, SEO services, social media marketing, web development, business growth, online marketing"
+        url="https://yourdomain.com"
+        canonical="https://yourdomain.com"
+      />
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Animated Background */}

@@ -12,6 +12,8 @@ import Layout from '../components/Layout';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import SEO from '@/components/SEO';
+import OptimizedImage from '@/components/OptimizedImage';
 
 interface BlogPost {
   id: string;
@@ -211,8 +213,15 @@ const Blog = () => {
 
   // Error state
   if (error) {
-    return (
-      <Layout>
+  return (
+    <Layout>
+      <SEO
+        title="Digital Marketing Blog - Expert Tips, Trends & Insights | Yara Agency"
+        description="Stay ahead with our digital marketing blog. Get expert insights on SEO, web design, social media marketing, branding strategies, and business growth tips."
+        keywords="digital marketing blog, SEO tips, web design trends, marketing insights, business growth, social media marketing, branding strategies"
+        url="https://yourdomain.com/blog"
+        canonical="https://yourdomain.com/blog"
+      />
         <div className="min-h-screen bg-gradient-to-br from-background to-background/20 py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto">

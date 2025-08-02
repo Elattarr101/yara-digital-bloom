@@ -2,6 +2,7 @@ import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { TrendingUp, Code, Palette, FileText, ArrowRight, CheckCircle } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 const Services = () => {
   const services = [
@@ -65,6 +66,13 @@ const Services = () => {
 
   return (
     <Layout>
+      <SEO
+        title="Digital Marketing Services | Web Design, SEO, Branding & More - Yara Agency"
+        description="Comprehensive digital marketing services including web design, SEO, social media marketing, branding, and PPC advertising. Transform your business with expert solutions."
+        keywords="digital marketing services, web design, SEO services, social media marketing, branding, PPC advertising, content marketing, online marketing"
+        url="https://yourdomain.com/services"
+        canonical="https://yourdomain.com/services"
+      />
       {/* Page Header */}
       <section className="section-padding bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]"></div>
