@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import UserMenu from '@/components/UserMenu';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,31 +40,34 @@ const Header = () => {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="/" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <span className="text-2xl lg:text-3xl font-bold text-primary">
                 Yara
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navigationLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
-                href={link.href}
+                to={link.href}
                 className="text-foreground hover:text-primary transition-smooth font-medium"
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
           </nav>
 
-          {/* Desktop CTA Button */}
-          <div className="hidden lg:flex">
-            <Button className="btn-primary">
-              Get Started
-            </Button>
+          {/* Desktop Actions */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <UserMenu />
+            <Link to="/contact">
+              <Button className="btn-primary">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -87,19 +92,24 @@ const Header = () => {
         >
           <nav className="pb-6 pt-2 space-y-1 bg-background/95 backdrop-blur-lg rounded-lg mt-2 shadow-medium">
             {navigationLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
-                href={link.href}
+                to={link.href}
                 className="block px-4 py-3 text-foreground hover:text-primary hover:bg-muted/50 transition-smooth font-medium rounded-lg mx-2"
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
-            <div className="px-2 pt-4">
-              <Button className="btn-primary w-full">
-                Get Started
-              </Button>
+            <div className="px-2 pt-4 space-y-2">
+              <div className="flex justify-center">
+                <UserMenu />
+              </div>
+              <Link to="/contact">
+                <Button className="btn-primary w-full">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </nav>
         </div>

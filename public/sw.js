@@ -26,7 +26,10 @@ const cacheStrategies = {
   // Network first for API calls and dynamic content
   networkFirst: [
     /\/api\//,
-    /supabase/
+    /supabase/,
+    /\/auth/,
+    /\/admin/,
+    /\/profile/
   ],
   
   // Stale while revalidate for HTML pages
@@ -96,6 +99,21 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other protocols
   if (!url.protocol.startsWith('http')) {
     return;
+  }
+
+  // Skip sensitive paths that should never be cached
+  const sensitivePatterns = [
+    /\/auth/,
+    /\/admin/,
+    /\/profile/,
+    /supabase.*\/auth\//,
+    /supabase.*\/functions\//
+  ];
+  
+  for (const pattern of sensitivePatterns) {
+    if (pattern.test(request.url)) {
+      return;
+    }
   }
 
   // Determine cache strategy

@@ -16,6 +16,7 @@ export interface AnalyticsEvent {
 export class Analytics {
   private static instance: Analytics;
   private isInitialized = false;
+  private measurementId: string | null = null;
 
   private constructor() {}
 
@@ -26,51 +27,99 @@ export class Analytics {
     return Analytics.instance;
   }
 
-  // Initialize Google Analytics
+  // Initialize Google Analytics with enhanced security
   init(measurementId: string) {
-    if (this.isInitialized || typeof window === 'undefined') return;
+    if (!measurementId) {
+      console.warn('Analytics: No measurement ID provided');
+      return;
+    }
 
-    // Create gtag script
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-    document.head.appendChild(script);
+    if (this.isInitialized) {
+      console.log('Analytics: Already initialized');
+      return;
+    }
 
-    // Initialize dataLayer and gtag
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function(...args: any[]) {
-      window.dataLayer.push(args);
-    };
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') {
+      console.warn('Analytics: Not in browser environment');
+      return;
+    }
 
-    window.gtag('js', new Date());
-    window.gtag('config', measurementId, {
-      page_title: document.title,
-      page_location: window.location.href,
-    });
+    try {
+      this.measurementId = measurementId;
 
-    this.isInitialized = true;
-    console.log('Analytics initialized');
+      // Check if gtag is already loaded
+      if (window.gtag) {
+        console.log('Google Analytics already initialized');
+        this.isInitialized = true;
+        return;
+      }
+
+      // Create gtag script with error handling
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+      script.onerror = () => {
+        console.error('Analytics: Failed to load Google Analytics script');
+      };
+      document.head.appendChild(script);
+
+      // Initialize dataLayer and gtag
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(...args: any[]) {
+        window.dataLayer.push(args);
+      };
+
+      // Configure with privacy-focused settings
+      window.gtag('js', new Date());
+      window.gtag('config', measurementId, {
+        page_title: document.title,
+        page_location: window.location.href,
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      });
+
+      this.isInitialized = true;
+      console.log(`Analytics initialized with ID: ${measurementId}`);
+    } catch (error) {
+      console.error('Analytics: Initialization failed:', error);
+    }
   }
 
   // Track page views
   trackPageView(path: string, title?: string) {
-    if (!this.isInitialized || typeof window === 'undefined') return;
+    if (!this.isInitialized || typeof window === 'undefined' || !window.gtag || !this.measurementId) {
+      console.warn('Analytics: Not properly initialized');
+      return;
+    }
 
-    window.gtag('config', 'GA_MEASUREMENT_ID', {
-      page_path: path,
-      page_title: title || document.title,
-    });
+    try {
+      window.gtag('config', this.measurementId, {
+        page_path: path,
+        page_title: title || document.title,
+      });
+    } catch (error) {
+      console.error('Analytics: Failed to track page view:', error);
+    }
   }
 
   // Track custom events
   trackEvent({ action, category, label, value }: AnalyticsEvent) {
-    if (!this.isInitialized || typeof window === 'undefined') return;
+    if (!this.isInitialized || typeof window === 'undefined' || !window.gtag) {
+      console.warn('Analytics: Not properly initialized');
+      return;
+    }
 
-    window.gtag('event', action, {
-      event_category: category,
-      event_label: label,
-      value: value,
-    });
+    try {
+      window.gtag('event', action, {
+        event_category: category,
+        event_label: label,
+        value: value,
+      });
+    } catch (error) {
+      console.error('Analytics: Failed to track event:', error);
+    }
   }
 
   // Track form submissions

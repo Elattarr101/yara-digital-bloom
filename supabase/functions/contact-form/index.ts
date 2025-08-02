@@ -117,22 +117,35 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Submission saved successfully:', submission.id);
 
+    // Get site URL from environment
+    const siteUrl = Deno.env.get('SITE_URL') || 'https://tgzeogmauexqkvbsittb.supabase.co';
+    
+    // Sanitize HTML content to prevent XSS
+    const sanitizeHtml = (text: string) => {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
+
     // Send notification email to admin
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #8B5CF6;">New Contact Form Submission</h2>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3>Contact Information</h3>
-          <p><strong>Name:</strong> ${formData.full_name}</p>
-          <p><strong>Email:</strong> ${formData.email}</p>
-          ${formData.company_name ? `<p><strong>Company:</strong> ${formData.company_name}</p>` : ''}
+          <p><strong>Name:</strong> ${sanitizeHtml(formData.full_name)}</p>
+          <p><strong>Email:</strong> ${sanitizeHtml(formData.email)}</p>
+          ${formData.company_name ? `<p><strong>Company:</strong> ${sanitizeHtml(formData.company_name)}</p>` : ''}
           
           <h3>Project Details</h3>
-          <p><strong>Service Interested:</strong> ${formData.service_interested}</p>
-          <p><strong>Budget Range:</strong> ${formData.budget_range}</p>
+          <p><strong>Service Interested:</strong> ${sanitizeHtml(formData.service_interested)}</p>
+          <p><strong>Budget Range:</strong> ${sanitizeHtml(formData.budget_range)}</p>
           <p><strong>Project Details:</strong></p>
           <div style="background: white; padding: 15px; border-radius: 4px; margin: 10px 0;">
-            ${formData.project_details.replace(/\n/g, '<br>')}
+            ${sanitizeHtml(formData.project_details).replace(/\n/g, '<br>')}
           </div>
           
           <hr style="margin: 20px 0;">
@@ -145,9 +158,9 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const { error: adminEmailError } = await resend.emails.send({
-      from: 'Yara Contact Form <contact@yourdomain.com>',
-      to: ['hello@yaraagency.com'], // Replace with your actual email
-      subject: `New Contact: ${formData.full_name} - ${formData.service_interested}`,
+      from: `Yara Contact Form <${Deno.env.get('FROM_EMAIL') || 'contact@yaraagency.com'}>`,
+      to: [Deno.env.get('ADMIN_EMAIL') || 'hello@yaraagency.com'],
+      subject: `New Contact: ${sanitizeHtml(formData.full_name)} - ${sanitizeHtml(formData.service_interested)}`,
       html: adminEmailHtml,
     });
 
@@ -161,21 +174,21 @@ const handler = async (req: Request): Promise<Response> => {
     const userEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #8B5CF6;">Thank you for contacting Yara!</h2>
-        <p>Hi ${formData.full_name},</p>
-        <p>We've received your inquiry about <strong>${formData.service_interested}</strong> and will get back to you within 24 hours.</p>
+        <p>Hi ${sanitizeHtml(formData.full_name)},</p>
+        <p>We've received your inquiry about <strong>${sanitizeHtml(formData.service_interested)}</strong> and will get back to you within 24 hours.</p>
         
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3>Your Submission Summary:</h3>
-          <p><strong>Service:</strong> ${formData.service_interested}</p>
-          <p><strong>Budget Range:</strong> ${formData.budget_range}</p>
-          ${formData.company_name ? `<p><strong>Company:</strong> ${formData.company_name}</p>` : ''}
+          <p><strong>Service:</strong> ${sanitizeHtml(formData.service_interested)}</p>
+          <p><strong>Budget Range:</strong> ${sanitizeHtml(formData.budget_range)}</p>
+          ${formData.company_name ? `<p><strong>Company:</strong> ${sanitizeHtml(formData.company_name)}</p>` : ''}
         </div>
         
         <p>In the meantime, feel free to:</p>
         <ul>
-          <li><a href="https://yourdomain.com/portfolio" style="color: #8B5CF6;">Check out our portfolio</a></li>
-          <li><a href="https://yourdomain.com/blog" style="color: #8B5CF6;">Read our latest blog posts</a></li>
-          <li><a href="https://yourdomain.com/services" style="color: #8B5CF6;">Learn more about our services</a></li>
+          <li><a href="${siteUrl}/portfolio" style="color: #8B5CF6;">Check out our portfolio</a></li>
+          <li><a href="${siteUrl}/blog" style="color: #8B5CF6;">Read our latest blog posts</a></li>
+          <li><a href="${siteUrl}/services" style="color: #8B5CF6;">Learn more about our services</a></li>
         </ul>
         
         <p>Best regards,<br>
@@ -189,7 +202,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const { error: userEmailError } = await resend.emails.send({
-      from: 'Yara <hello@yourdomain.com>',
+      from: `Yara <${Deno.env.get('FROM_EMAIL') || 'hello@yaraagency.com'}>`,
       to: [formData.email],
       subject: 'Thank you for contacting Yara - We\'ll be in touch soon!',
       html: userEmailHtml,
