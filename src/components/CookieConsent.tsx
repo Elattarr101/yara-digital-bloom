@@ -48,9 +48,26 @@ const CookieConsent = () => {
 
     // Initialize analytics if consented
     if (prefs.analytics && typeof window !== 'undefined') {
-      // Initialize analytics here
       import('../utils/analytics').then(({ analytics }) => {
-        analytics.init('GA_MEASUREMENT_ID'); // Replace with your actual GA ID
+        import('../config/analytics').then(({ analyticsConfig }) => {
+          // Update analytics configuration based on consent
+          analyticsConfig.updateConfig({
+            enabled: true,
+            privacyMode: !prefs.marketing, // More privacy if marketing not consented
+            debug: false
+          });
+          
+          // Initialize analytics if measurement ID is available
+          const config = analyticsConfig.getConfig();
+          if (config.measurementId) {
+            analytics.init();
+          }
+        });
+      });
+    } else {
+      // Disable analytics if not consented
+      import('../config/analytics').then(({ analyticsConfig }) => {
+        analyticsConfig.disable();
       });
     }
 

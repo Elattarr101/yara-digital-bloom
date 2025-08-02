@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { enhancedContactFormSchema, type EnhancedContactFormData, securityValidation, validationUtils } from '@/utils/validation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,21 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import SEO from '@/components/SEO';
 
-const contactFormSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  companyName: z.string().optional(),
-  serviceInterested: z.enum(["Digital Marketing", "Web Design & Development", "Branding & Identity", "Content Creation", "Multiple Services"], {
-    message: "Please select a service",
-  }),
-  budgetRange: z.enum(["$500 - $1,000", "$1,000 - $5,000", "$5,000 - $10,000", "$10,000+"], {
-    message: "Please select a budget range",
-  }),
-  projectDetails: z.string().min(10, "Please provide more details about your project"),
-  honeypot: z.string().optional(), // Security field
-});
-
-type ContactFormData = z.infer<typeof contactFormSchema>;
+// Using enhanced validation schema
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,8 +26,8 @@ const Contact = () => {
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const form = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema),
+  const form = useForm<EnhancedContactFormData>({
+    resolver: zodResolver(enhancedContactFormSchema),
     defaultValues: {
       fullName: "",
       email: "",
@@ -53,22 +39,31 @@ const Contact = () => {
     },
   });
 
-  const onSubmit = async (values: ContactFormData) => {
+  const onSubmit = async (values: EnhancedContactFormData) => {
     setIsSubmitting(true);
     setSubmissionError(null);
     
     try {
-      // Call the edge function instead of direct database insert
+      // Enhanced security checks
+      const rateLimit = securityValidation.checkRateLimit(values.email, 3, 15 * 60 * 1000); // 3 attempts per 15 minutes
+      if (!rateLimit.allowed) {
+        throw new Error(`Too many attempts. Please wait ${rateLimit.remainingTime} minutes before trying again.`);
+      }
+
+      // Sanitize inputs
+      const sanitizedValues = {
+        full_name: validationUtils.sanitizeText(values.fullName),
+        email: values.email.toLowerCase().trim(),
+        company_name: values.companyName ? validationUtils.sanitizeText(values.companyName) : null,
+        service_interested: values.serviceInterested,
+        budget_range: values.budgetRange,
+        project_details: validationUtils.sanitizeText(values.projectDetails),
+        honeypot: values.honeypot, // Security field
+      };
+
+      // Call the edge function with sanitized data
       const { data, error } = await supabase.functions.invoke('contact-form', {
-        body: {
-          full_name: values.fullName,
-          email: values.email,
-          company_name: values.companyName || null,
-          service_interested: values.serviceInterested,
-          budget_range: values.budgetRange,
-          project_details: values.projectDetails,
-          honeypot: values.honeypot, // Security field
-        },
+        body: sanitizedValues,
       });
 
       if (error) {
