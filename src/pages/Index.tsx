@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { useScrollAnimation, fadeInUp, staggerContainer, scaleIn, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
+import { useScrollTracking, useEngagementTracking, useButtonTracking } from '@/hooks/useAnalyticsTracking';
 import AnimatedCounter from '@/components/animations/AnimatedCounter';
 import SEO from '@/components/SEO';
 import StructuredData from '@/components/StructuredData';
@@ -70,6 +71,11 @@ const Index = () => {
   const { ref: statsRef, controls: statsControls } = useScrollAnimation();
   const { ref: logoRef, controls: logoControls } = useScrollAnimation();
   const { ref: workRef, controls: workControls } = useScrollAnimation();
+
+  // Analytics tracking
+  useScrollTracking();
+  useEngagementTracking();
+  const { trackClick } = useButtonTracking();
 
   return (
     <Layout>
@@ -145,12 +151,21 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in [animation-delay:400ms]">
-              <Button variant="hero" size="xl" className="group">
+              <Button 
+                variant="hero" 
+                size="xl" 
+                className="group"
+                onClick={() => trackClick('Get Started', 'hero')}
+              >
                 Get Started
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Button>
               
-              <Button variant="outline-hero" size="xl">
+              <Button 
+                variant="outline-hero" 
+                size="xl"
+                onClick={() => trackClick('View Our Work', 'hero')}
+              >
                 View Our Work
               </Button>
             </div>
@@ -388,6 +403,7 @@ const Index = () => {
               variant="secondary" 
               size="xl" 
               className="group animate-fade-in [animation-delay:400ms]"
+              onClick={() => trackClick('Schedule Consultation', 'cta-section')}
             >
               Schedule a Free Consultation
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
