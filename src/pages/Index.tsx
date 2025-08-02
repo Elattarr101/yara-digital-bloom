@@ -114,15 +114,15 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Animated Background */}
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `url(${heroImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        >
+        <div className="absolute inset-0 z-0">
+          <img
+            src={heroImage}
+            alt="Digital marketing hero background"
+            className="w-full h-full object-cover"
+            loading="eager"
+            // @ts-ignore - fetchpriority is a valid HTML attribute
+            fetchpriority="high"
+          />
           <div className="absolute inset-0 gradient-hero opacity-90"></div>
           
           {/* Animated Shapes */}

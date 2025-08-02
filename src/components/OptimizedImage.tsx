@@ -13,6 +13,8 @@ interface OptimizedImageProps {
   blurDataURL?: string;
   onLoad?: () => void;
   onError?: () => void;
+  loading?: 'lazy' | 'eager';
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
 const OptimizedImage = ({
@@ -26,7 +28,9 @@ const OptimizedImage = ({
   placeholder = 'empty',
   blurDataURL = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Ehh0VWHuKfmhHTaIhBWBwREXf7MniEDeMjwCcG+/PaHJ7VgQXGJ2mfJ9aHY3KDXl0mMJglBmCFPhWAQo4AxcdCxGH7zIpWXWeqPm7GvpDtUF5bKIDHhIgMOBlDUVIQETzQPUrVISN/9k=",
   onLoad,
-  onError
+  onError,
+  loading = 'lazy',
+  fetchPriority = 'auto'
 }: OptimizedImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
@@ -122,8 +126,10 @@ const OptimizedImage = ({
           )}
           onLoad={handleLoad}
           onError={handleError}
-          loading={priority ? "eager" : "lazy"}
+          loading={priority ? "eager" : loading}
           decoding="async"
+          // @ts-ignore - fetchpriority is a valid HTML attribute
+          fetchpriority={priority ? 'high' : fetchPriority}
         />
       )}
       

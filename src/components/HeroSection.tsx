@@ -111,14 +111,16 @@ const HeroSection = ({
       {/* Background with parallax */}
       <motion.div 
         className="absolute inset-0 z-0"
-        style={{
-          y,
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
+        style={{ y }}
       >
+        <img
+          src={backgroundImage}
+          alt="Hero background"
+          className="w-full h-full object-cover"
+          loading="eager"
+          // @ts-ignore - fetchpriority is a valid HTML attribute
+          fetchpriority="high"
+        />
         {/* Gradient overlay */}
         <div className="absolute inset-0 gradient-hero opacity-90"></div>
       </motion.div>
