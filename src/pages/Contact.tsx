@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { z } from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +19,10 @@ const contactFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   companyName: z.string().optional(),
   serviceInterested: z.enum(["Digital Marketing", "Web Design & Development", "Branding & Identity", "Content Creation", "Multiple Services"], {
-    required_error: "Please select a service",
+    message: "Please select a service",
   }),
   budgetRange: z.enum(["$500 - $1,000", "$1,000 - $5,000", "$5,000 - $10,000", "$10,000+"], {
-    required_error: "Please select a budget range",
+    message: "Please select a budget range",
   }),
   projectDetails: z.string().min(10, "Please provide more details about your project"),
 });
