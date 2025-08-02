@@ -1,229 +1,215 @@
+import { useState } from 'react';
 import Layout from '@/components/Layout';
-import HeroSection from '@/components/HeroSection';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ExternalLink, TrendingUp, Users, Award } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 const Portfolio = () => {
+  const [activeFilter, setActiveFilter] = useState('All');
+
+  const filters = ['All', 'Branding', 'Web Design', 'Marketing', 'E-commerce'];
+
   const projects = [
     {
-      title: 'TechFlow Solutions',
-      category: 'B2B SaaS',
-      description: 'Complete digital transformation for a growing software company, including website redesign, SEO optimization, and lead generation campaigns.',
-      results: [
-        '300% increase in organic traffic',
-        '150% boost in qualified leads',
-        '45% improvement in conversion rate'
-      ],
-      tags: ['SEO', 'Web Design', 'Lead Generation'],
-      image: 'gradient-from-blue-500-to-purple-600'
+      id: 1,
+      name: 'TechStart',
+      service: 'Complete Branding & Website',
+      industry: 'Technology Startup',
+      result: '500% increase in leads within 3 months',
+      description: 'Full brand identity and responsive website design',
+      category: 'Branding',
+      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop'
     },
     {
-      title: 'GreenEarth Cosmetics',
+      id: 2,
+      name: 'EcoClean',
+      service: 'Digital Marketing Campaign',
+      industry: 'Cleaning Services',
+      result: '300% ROI on ad spend',
+      description: 'Multi-channel marketing strategy with PPC and SEO',
+      category: 'Marketing',
+      image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=600&h=400&fit=crop'
+    },
+    {
+      id: 3,
+      name: 'FashionForward',
+      service: 'E-commerce Website',
+      industry: 'Fashion Retail',
+      result: '200% increase in online sales',
+      description: 'Modern e-commerce platform with mobile optimization',
       category: 'E-commerce',
-      description: 'Social media marketing and influencer campaigns for sustainable beauty brand targeting millennials and Gen Z consumers.',
-      results: [
-        '250% growth in social following',
-        '180% increase in online sales',
-        '500K+ campaign impressions'
-      ],
-      tags: ['Social Media', 'Influencer Marketing', 'E-commerce'],
-      image: 'gradient-from-green-400-to-blue-500'
+      image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=600&h=400&fit=crop'
     },
     {
-      title: 'UrbanFit Gyms',
-      category: 'Local Business',
-      description: 'Local SEO and Google Ads campaigns to drive membership growth across 5 gym locations in major metropolitan areas.',
-      results: [
-        '200% increase in local search visibility',
-        '120% growth in new memberships',
-        '60% reduction in cost per acquisition'
-      ],
-      tags: ['Local SEO', 'Google Ads', 'Conversion Optimization'],
-      image: 'gradient-from-orange-400-to-red-500'
+      id: 4,
+      name: 'HealthPlus',
+      service: 'Brand Redesign',
+      industry: 'Healthcare',
+      result: '85% improvement in brand recognition',
+      description: 'Complete visual identity overhaul and brand guidelines',
+      category: 'Branding',
+      image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=600&h=400&fit=crop'
     },
     {
-      title: 'InnovateLegal',
-      category: 'Professional Services',
-      description: 'Content marketing and thought leadership strategy for a boutique law firm specializing in technology and startup law.',
-      results: [
-        '400% increase in website traffic',
-        '80% more consultation requests',
-        '15 published industry articles'
-      ],
-      tags: ['Content Marketing', 'SEO', 'Thought Leadership'],
-      image: 'gradient-from-purple-500-to-pink-500'
+      id: 5,
+      name: 'FoodieApp',
+      service: 'Mobile App UI/UX',
+      industry: 'Food Delivery',
+      result: '4.8/5 app store rating',
+      description: 'Intuitive food delivery app design with seamless UX',
+      category: 'Web Design',
+      image: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=600&h=400&fit=crop'
     },
     {
-      title: 'FreshMeal Delivery',
-      category: 'Food & Beverage',
-      description: 'Multi-channel digital marketing campaign for meal delivery startup targeting health-conscious urban professionals.',
-      results: [
-        '500% increase in app downloads',
-        '300% growth in subscription revenue',
-        '25% improvement in customer retention'
-      ],
-      tags: ['Mobile Marketing', 'Email Campaigns', 'Retention Marketing'],
-      image: 'gradient-from-yellow-400-to-orange-500'
+      id: 6,
+      name: 'LocalBiz',
+      service: 'Social Media Management',
+      industry: 'Local Business',
+      result: '1M+ social media reach per month',
+      description: 'Complete social media strategy and content creation',
+      category: 'Marketing',
+      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop'
     },
     {
-      title: 'CloudSecure Enterprise',
-      category: 'Cybersecurity',
-      description: 'Account-based marketing and sales enablement for enterprise cybersecurity solutions targeting Fortune 500 companies.',
-      results: [
-        '150% increase in enterprise leads',
-        '75% shorter sales cycle',
-        '$2M+ in pipeline generation'
-      ],
-      tags: ['ABM', 'Sales Enablement', 'Enterprise Marketing'],
-      image: 'gradient-from-indigo-500-to-purple-600'
+      id: 7,
+      name: 'GreenEnergy',
+      service: 'Website + SEO',
+      industry: 'Renewable Energy',
+      result: '250% increase in organic traffic',
+      description: 'SEO-optimized website with conversion focus',
+      category: 'Web Design',
+      image: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=600&h=400&fit=crop'
+    },
+    {
+      id: 8,
+      name: 'SportsPro',
+      service: 'Complete Marketing Package',
+      industry: 'Sports Equipment',
+      result: '150% boost in quarterly revenue',
+      description: 'Integrated marketing campaign across all channels',
+      category: 'Marketing',
+      image: 'https://images.unsplash.com/photo-1487887235947-a955ef187fcc?w=600&h=400&fit=crop'
     }
   ];
 
-  const categories = ['All', 'B2B SaaS', 'E-commerce', 'Local Business', 'Professional Services', 'Food & Beverage', 'Cybersecurity'];
+  const filteredProjects = activeFilter === 'All' 
+    ? projects 
+    : projects.filter(project => project.category === activeFilter);
 
   return (
     <Layout>
-      <HeroSection
-        title="Success Stories That Speak for Themselves"
-        subtitle="Explore how we've helped businesses across industries achieve remarkable growth through strategic digital marketing and creative campaigns."
-        variant="minimal"
-        primaryCTA="Start Your Project"
-        secondaryCTA="View Case Studies"
-      />
+      {/* Page Intro */}
+      <section className="section-padding bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(120,119,198,0.1),transparent_50%)]"></div>
+        <div className="container-custom relative">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              Our Portfolio
+            </h1>
+            <p className="text-xl lg:text-2xl text-muted-foreground">
+              Success stories that speak for themselves
+            </p>
+          </div>
+        </div>
+      </section>
 
-      {/* Filter Buttons */}
-      <section className="py-8 bg-muted/20">
+      {/* Filter System */}
+      <section className="py-12">
         <div className="container-custom">
-          <div className="flex flex-wrap gap-3 justify-center">
-            {categories.map((category) => (
-              <Button key={category} variant="outline" size="sm" className="hover:bg-secondary hover:text-secondary-foreground">
-                {category}
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            {filters.map((filter) => (
+              <Button
+                key={filter}
+                variant={activeFilter === filter ? "default" : "outline"}
+                onClick={() => setActiveFilter(filter)}
+                className={`px-6 py-2 transition-all duration-300 ${
+                  activeFilter === filter 
+                    ? 'bg-primary text-primary-foreground shadow-lg' 
+                    : 'hover:bg-primary/10 hover:border-primary'
+                }`}
+              >
+                {filter}
               </Button>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Portfolio Grid */}
-      <section className="section-padding">
+      {/* Projects Grid */}
+      <section className="pb-20">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <Card key={index} className="group overflow-hidden border-0 shadow-medium hover:shadow-large transition-all duration-300 hover:-translate-y-2">
-                {/* Project Image Placeholder */}
-                <div className={`h-48 bg-${project.image} relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary/80 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <h4 className="font-semibold text-lg">{project.title}</h4>
-                      <p className="text-sm opacity-90">{project.category}</p>
-                    </div>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <ExternalLink className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+            {filteredProjects.map((project, index) => (
+              <div 
+                key={project.id}
+                className="group bg-card rounded-2xl overflow-hidden shadow-medium hover:shadow-large transition-all duration-500 hover:-translate-y-2 animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {/* Project Image */}
+                <div className="relative h-64 overflow-hidden">
+                  <img 
+                    src={project.image} 
+                    alt={project.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                    <Button variant="secondary" size="lg" className="backdrop-blur-sm bg-white/90">
+                      View Case Study
+                      <ExternalLink size={18} className="ml-2" />
+                    </Button>
                   </div>
                 </div>
 
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-semibold text-lg mb-1">{project.title}</h3>
-                      <Badge variant="secondary" className="text-xs">{project.category}</Badge>
-                    </div>
+                {/* Project Info */}
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+                      {project.name}
+                    </h3>
+                    <span className="text-xs px-3 py-1 bg-secondary/10 text-secondary rounded-full font-medium">
+                      {project.category}
+                    </span>
                   </div>
-
-                  <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-                    {project.description}
-                  </p>
-
-                  {/* Results */}
-                  <div className="mb-6">
-                    <h4 className="font-medium text-sm mb-3 flex items-center">
-                      <TrendingUp size={16} className="mr-2 text-accent" />
-                      Key Results
-                    </h4>
-                    <ul className="space-y-1">
-                      {project.results.map((result, resultIndex) => (
-                        <li key={resultIndex} className="text-xs text-muted-foreground flex items-center">
-                          <Award size={12} className="mr-2 text-accent" />
-                          {result}
-                        </li>
-                      ))}
-                    </ul>
+                  
+                  <p className="text-sm text-muted-foreground mb-2">{project.service}</p>
+                  <p className="text-sm text-muted-foreground mb-4">{project.industry}</p>
+                  
+                  <div className="mb-4">
+                    <p className="text-sm text-muted-foreground mb-2">{project.description}</p>
                   </div>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {project.tags.map((tag, tagIndex) => (
-                      <Badge key={tagIndex} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
+                  
+                  {/* Key Result */}
+                  <div className="pt-4 border-t">
+                    <p className="text-sm font-semibold text-accent">
+                      📈 {project.result}
+                    </p>
                   </div>
-
-                  <Button className="w-full group text-sm">
-                    View Case Study
-                    <ExternalLink size={14} className="group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="section-padding bg-primary text-primary-foreground">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Our Impact by the Numbers
-            </h2>
-            <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
-              Real results from real campaigns across diverse industries and business models.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-bold mb-2">500+</div>
-              <div className="text-primary-foreground/80">Projects Completed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-bold mb-2">$50M+</div>
-              <div className="text-primary-foreground/80">Revenue Generated</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-bold mb-2">250%</div>
-              <div className="text-primary-foreground/80">Average ROI Increase</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-bold mb-2">98%</div>
-              <div className="text-primary-foreground/80">Client Satisfaction</div>
-            </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding">
+      <section className="section-padding bg-gradient-to-r from-primary via-secondary to-accent text-white">
         <div className="container-custom">
           <div className="text-center max-w-4xl mx-auto">
             <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Ready to Become Our Next Success Story?
+              Ready to Be Our Next Success Story?
             </h2>
-            <p className="text-xl text-muted-foreground mb-8">
-              Let's discuss your goals and create a custom strategy that delivers the results your business deserves.
+            <p className="text-xl mb-8 text-white/90">
+              Let's discuss your project and create something amazing together.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="default" size="xl" className="btn-primary">
-                Start Your Project
-              </Button>
-              <Button variant="outline" size="xl">
-                Download Portfolio Guide
-              </Button>
-            </div>
+            <Button 
+              variant="secondary" 
+              size="xl" 
+              className="bg-white text-primary hover:bg-white/90"
+            >
+              Start Your Project
+            </Button>
           </div>
         </div>
       </section>
