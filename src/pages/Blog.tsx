@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import SEO from '@/components/SEO';
+import StructuredData from '@/components/StructuredData';
 import OptimizedImage from '@/components/OptimizedImage';
 
 interface BlogPost {
@@ -213,15 +214,23 @@ const Blog = () => {
 
   // Error state
   if (error) {
-  return (
-    <Layout>
-      <SEO
-        title="Digital Marketing Blog - Expert Tips, Trends & Insights | Yara Agency"
-        description="Stay ahead with our digital marketing blog. Get expert insights on SEO, web design, social media marketing, branding strategies, and business growth tips."
-        keywords="digital marketing blog, SEO tips, web design trends, marketing insights, business growth, social media marketing, branding strategies"
-        url="https://yourdomain.com/blog"
-        canonical="https://yourdomain.com/blog"
-      />
+    return (
+      <Layout>
+        <SEO
+          title="Digital Marketing Blog - Expert Tips, Trends & Insights | Yara Agency"
+          description="Stay ahead with our digital marketing blog. Get expert insights on SEO, web design, social media marketing, branding strategies, and business growth tips."
+          keywords="digital marketing blog, SEO tips, web design trends, marketing insights, business growth, social media marketing, branding strategies"
+          url="https://yourdomain.com/blog"
+          canonical="https://yourdomain.com/blog"
+        />
+        
+        <StructuredData
+          type="website"
+          data={{
+            description: "Digital marketing blog with expert insights, tips, and trends for business growth"
+          }}
+        />
+        
         <div className="min-h-screen bg-gradient-to-br from-background to-background/20 py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl mx-auto">
@@ -249,6 +258,20 @@ const Blog = () => {
 
   return (
     <Layout>
+      <SEO
+        title="Digital Marketing Blog - Expert Tips, Trends & Insights | Yara Agency"
+        description="Stay ahead with our digital marketing blog. Get expert insights on SEO, web design, social media marketing, branding strategies, and business growth tips."
+        keywords="digital marketing blog, SEO tips, web design trends, marketing insights, business growth, social media marketing, branding strategies"
+        url="https://yourdomain.com/blog"
+        canonical="https://yourdomain.com/blog"
+      />
+      
+      <StructuredData
+        type="website"
+        data={{
+          description: "Digital marketing blog with expert insights, tips, and trends for business growth"
+        }}
+      />
       <div className="min-h-screen bg-gradient-to-br from-background to-background/20 py-16">
         <div className="container mx-auto px-4">
           {/* Debug Info */}
@@ -326,10 +349,13 @@ const Blog = () => {
                 <Card className="shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden h-full cursor-pointer">
                   {/* Featured Image */}
                   <div className="aspect-video overflow-hidden">
-                    <img
+                    <OptimizedImage
                       src={post.featured_image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
-                      alt={post.title}
+                      alt={`Featured image for blog post: ${post.title}`}
+                      width={800}
+                      height={450}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
 

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useScrollAnimation, fadeInUp, staggerContainer, scaleIn, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
 import AnimatedCounter from '@/components/animations/AnimatedCounter';
 import SEO from '@/components/SEO';
+import StructuredData from '@/components/StructuredData';
 import heroImage from '@/assets/hero-marketing.jpg';
 
 const Index = () => {
@@ -78,6 +79,37 @@ const Index = () => {
         keywords="digital marketing agency, web design, branding, SEO services, social media marketing, web development, business growth, online marketing"
         url="https://yourdomain.com"
         canonical="https://yourdomain.com"
+      />
+      
+      <StructuredData
+        type="organization"
+        data={{
+          phone: "+1-555-0123",
+          email: "hello@yaraagency.com",
+          region: "California"
+        }}
+      />
+      
+      <StructuredData
+        type="website"
+        data={{
+          description: "Expert digital marketing, web design, and branding services that transform businesses"
+        }}
+      />
+      
+      <StructuredData
+        type="service"
+        data={{
+          name: "Digital Marketing Services",
+          description: "Comprehensive digital marketing solutions including SEO, web design, and branding",
+          type: "Professional Service",
+          services: [
+            { name: "Digital Marketing", description: "Strategic online marketing campaigns" },
+            { name: "Web Design", description: "Custom website design and development" },
+            { name: "Branding", description: "Brand identity and visual design services" },
+            { name: "SEO", description: "Search engine optimization services" }
+          ]
+        }}
       />
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
