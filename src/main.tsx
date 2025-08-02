@@ -7,12 +7,14 @@ import { register as registerSW } from './utils/serviceWorker'
 import { securityMonitor } from './utils/security-monitoring'
 import { securityHeaders } from './utils/security-headers'
 import { performanceMonitor } from './utils/performance-monitoring'
+import { threatIntelligence } from './utils/threat-intelligence'
 
 // Make security systems globally available for debugging
 if (typeof window !== 'undefined') {
   (window as any).securityMonitor = securityMonitor;
   (window as any).securityHeaders = securityHeaders;
   (window as any).performanceMonitor = performanceMonitor;
+  (window as any).threatIntelligence = threatIntelligence;
 }
 
 createRoot(document.getElementById("root")!).render(<App />);

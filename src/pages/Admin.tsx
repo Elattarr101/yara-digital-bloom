@@ -3,12 +3,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Layout from '@/components/Layout';
 import SEO from '@/components/SEO';
+import SecurityDashboard from '@/components/SecurityDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Edit, Trash2, Eye, Users, FileText, BarChart3 } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Users, FileText, BarChart3, Shield, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
