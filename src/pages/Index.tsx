@@ -1,101 +1,151 @@
 import Layout from '@/components/Layout';
-import HeroSection from '@/components/HeroSection';
-import { Users, Target, Zap, TrendingUp, Award, Rocket } from 'lucide-react';
+import { TrendingUp, Layout as LayoutIcon, Palette, Share2, ArrowRight, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import heroImage from '@/assets/hero-marketing.jpg';
 
 const Index = () => {
-  const features = [
-    {
-      icon: Target,
-      title: 'Strategic Marketing',
-      description: 'Data-driven strategies that target your ideal customers and drive measurable results.'
-    },
-    {
-      icon: Zap,
-      title: 'Fast Implementation',
-      description: 'Quick turnaround times without compromising quality or attention to detail.'
-    },
+  const services = [
     {
       icon: TrendingUp,
-      title: 'Growth Focused',
-      description: 'Every campaign is designed to scale your business and maximize your ROI.'
+      title: 'Digital Marketing',
+      tagline: 'Grow your online presence',
+      description: 'Drive targeted traffic and increase conversions with our comprehensive SEO, PPC, and email marketing strategies tailored to your business goals.'
     },
     {
-      icon: Users,
-      title: 'Expert Team',
-      description: 'Seasoned professionals with years of experience in digital marketing.'
+      icon: LayoutIcon,
+      title: 'Web Design',
+      tagline: 'Beautiful, functional websites',
+      description: 'Create stunning, responsive websites that not only look amazing but convert visitors into customers with optimized user experiences.'
     },
     {
-      icon: Award,
-      title: 'Award Winning',
-      description: 'Recognized for excellence in creative campaigns and outstanding results.'
+      icon: Palette,
+      title: 'Branding',
+      tagline: 'Memorable brand identities',
+      description: 'Build distinctive brand identities that resonate with your target audience through strategic logo design and comprehensive brand guidelines.'
     },
     {
-      icon: Rocket,
-      title: 'Innovation First',
-      description: 'Cutting-edge tools and techniques to keep you ahead of the competition.'
+      icon: Share2,
+      title: 'Social Media',
+      tagline: 'Engage your audience',
+      description: 'Connect with your customers across all social platforms with engaging content, community management, and targeted advertising campaigns.'
     }
   ];
 
-  const stats = [
-    { number: '500+', label: 'Successful Projects' },
-    { number: '98%', label: 'Client Satisfaction' },
-    { number: '250%', label: 'Average ROI Increase' },
-    { number: '24/7', label: 'Support Available' }
+  const clientLogos = [
+    'Nike', 'Apple', 'Google', 'Microsoft', 'Amazon', 'Tesla', 'Samsung', 'Coca-Cola'
+  ];
+
+  const featuredWork = [
+    {
+      title: 'TechStart Rebranding',
+      category: 'Brand Identity',
+      image: 'gradient-from-blue-600-to-purple-600'
+    },
+    {
+      title: 'EcoClean Campaign',
+      category: 'Digital Marketing',
+      image: 'gradient-from-green-500-to-teal-500'
+    },
+    {
+      title: 'Fashion Forward Website',
+      category: 'Web Design',
+      image: 'gradient-from-pink-500-to-rose-500'
+    }
   ];
 
   return (
     <Layout>
       {/* Hero Section */}
-      <HeroSection
-        title="Transform Your Business with Strategic Digital Marketing"
-        subtitle="We help ambitious businesses grow through innovative marketing strategies, creative campaigns, and data-driven insights that deliver real results."
-        primaryCTA="Start Your Journey"
-        showVideo={true}
-      />
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        {/* Animated Background */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          <div className="absolute inset-0 gradient-hero opacity-90"></div>
+          
+          {/* Animated Shapes */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-secondary/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse [animation-delay:1s]"></div>
+            <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-primary/30 rounded-full blur-2xl animate-pulse [animation-delay:2s]"></div>
+          </div>
+        </div>
 
-      {/* Stats Section */}
-      <section className="section-padding bg-muted/30">
-        <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                <div className="text-3xl lg:text-4xl font-bold text-primary mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-muted-foreground font-medium">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+        {/* Content */}
+        <div className="relative z-10 container-custom text-background">
+          <div className="max-w-4xl space-y-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight animate-fade-in">
+              We Create Digital Experiences That Drive Results
+            </h1>
+            
+            <p className="text-xl sm:text-2xl lg:text-3xl text-background/90 max-w-3xl animate-fade-in [animation-delay:200ms]">
+              Transform your business with data-driven marketing strategies and stunning design that converts visitors into customers
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in [animation-delay:400ms]">
+              <Button variant="hero" size="xl" className="group">
+                Get Started
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </Button>
+              
+              <Button variant="outline-hero" size="xl">
+                View Our Work
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-background/50 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-background/50 rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Services Preview Section */}
       <section className="section-padding">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Why Choose Yara for Your Marketing Needs?
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+              Our Expertise
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              We combine creativity with strategy to deliver marketing solutions that not only look great but drive real business growth.
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in [animation-delay:200ms]">
+              We combine creativity with strategy to deliver comprehensive digital solutions that drive measurable results.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => {
-              const IconComponent = feature.icon;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {services.map((service, index) => {
+              const IconComponent = service.icon;
               return (
-                <Card key={index} className="group hover:shadow-medium transition-all duration-300 hover:-translate-y-2 border-0 shadow-soft">
-                  <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-secondary/20 transition-colors">
-                      <IconComponent size={24} className="text-secondary" />
+                <Card 
+                  key={index} 
+                  className="group hover:shadow-large transition-all duration-300 hover:-translate-y-2 hover:scale-105 border-0 shadow-soft animate-fade-in"
+                  style={{ animationDelay: `${index * 100 + 400}ms` }}
+                >
+                  <CardContent className="p-8 text-center">
+                    <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-secondary/20 group-hover:scale-110 transition-all duration-300">
+                      <IconComponent size={32} className="text-secondary" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-4">{feature.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                    
+                    <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
+                    <p className="text-secondary font-medium mb-4">{service.tagline}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                      {service.description}
+                    </p>
+                    
+                    <Button variant="ghost" className="group/btn text-secondary hover:text-secondary p-0">
+                      Learn More
+                      <ArrowRight size={16} className="ml-1 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
                   </CardContent>
                 </Card>
               );
@@ -104,25 +154,126 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="section-padding bg-primary text-primary-foreground">
+      {/* Client Logos Section */}
+      <section className="section-padding bg-muted/30">
         <div className="container-custom">
-          <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Ready to Accelerate Your Growth?
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+              Trusted by Industry Leaders
             </h2>
-            <p className="text-xl mb-8 text-primary-foreground/90">
-              Join hundreds of successful businesses that have transformed their marketing with Yara. Let's create something amazing together.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="secondary" size="xl" className="group">
-                Get Free Consultation
-                <Target size={20} className="group-hover:rotate-12 transition-transform" />
-              </Button>
-              <Button variant="outline" size="xl" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                View Our Work
-              </Button>
+          </div>
+
+          {/* Infinite Scroll Container */}
+          <div className="relative overflow-hidden">
+            <div className="flex animate-scroll">
+              {/* First set of logos */}
+              {clientLogos.map((logo, index) => (
+                <div 
+                  key={`first-${index}`}
+                  className="flex-shrink-0 mx-8 lg:mx-12 group cursor-pointer"
+                >
+                  <div className="w-32 h-20 bg-muted rounded-lg flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110 shadow-soft">
+                    <span className="text-lg font-bold text-muted-foreground group-hover:text-primary">
+                      {logo}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {/* Duplicate set for seamless loop */}
+              {clientLogos.map((logo, index) => (
+                <div 
+                  key={`second-${index}`}
+                  className="flex-shrink-0 mx-8 lg:mx-12 group cursor-pointer"
+                >
+                  <div className="w-32 h-20 bg-muted rounded-lg flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110 shadow-soft">
+                    <span className="text-lg font-bold text-muted-foreground group-hover:text-primary">
+                      {logo}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Work Section */}
+      <section className="section-padding">
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+              Recent Success Stories
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in [animation-delay:200ms]">
+              Discover how we've helped businesses transform their digital presence and achieve remarkable growth.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredWork.map((work, index) => (
+              <Card 
+                key={index} 
+                className="group overflow-hidden border-0 shadow-medium hover:shadow-large transition-all duration-300 hover:-translate-y-2 cursor-pointer animate-fade-in"
+                style={{ animationDelay: `${index * 100 + 400}ms` }}
+              >
+                {/* Image with Overlay */}
+                <div className={`h-64 bg-${work.image} relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/60 to-secondary/60"></div>
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-primary/90 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                    <Button variant="secondary" className="group/btn">
+                      View Case Study
+                      <ExternalLink size={16} className="ml-2 group-hover/btn:scale-110 transition-transform" />
+                    </Button>
+                  </div>
+                  
+                  {/* Category Badge */}
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-white/90 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                      {work.category}
+                    </span>
+                  </div>
+                </div>
+
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2 group-hover:text-secondary transition-colors">
+                    {work.title}
+                  </h3>
+                  <p className="text-muted-foreground">{work.category}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="section-padding bg-primary text-primary-foreground relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20 border border-primary-foreground rounded-full"></div>
+          <div className="absolute top-32 right-20 w-16 h-16 border border-primary-foreground rounded-full"></div>
+          <div className="absolute bottom-20 left-1/4 w-12 h-12 border border-primary-foreground rounded-full"></div>
+          <div className="absolute bottom-32 right-1/3 w-24 h-24 border border-primary-foreground rounded-full"></div>
+        </div>
+
+        <div className="container-custom relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+              Ready to Transform Your Business?
+            </h2>
+            <p className="text-xl text-primary-foreground/90 mb-8 animate-fade-in [animation-delay:200ms]">
+              Let's discuss how we can help you achieve your digital marketing goals and drive measurable results for your business.
+            </p>
+            <Button 
+              variant="secondary" 
+              size="xl" 
+              className="group animate-fade-in [animation-delay:400ms]"
+            >
+              Schedule a Free Consultation
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
         </div>
       </section>
