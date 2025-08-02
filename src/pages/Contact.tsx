@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPin, Phone, Mail, Clock, MessageSquare, Users, Video, Facebook, Instagram, Linkedin, Twitter, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useScrollAnimation, fadeInUp, fadeInLeft, fadeInRight, staggerContainer, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
 import Layout from '../components/Layout';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -87,152 +89,225 @@ const Contact = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <motion.div 
+            className="grid lg:grid-cols-2 gap-12 items-start"
+            initial="hidden"
+            animate="visible"
+            variants={getReducedMotionVariants(staggerContainer)}
+          >
             {/* LEFT SIDE - CONTACT FORM */}
-            <div className="order-2 lg:order-1">
-              <div className="mb-8">
+            <motion.div 
+              className="order-2 lg:order-1"
+              variants={getReducedMotionVariants(fadeInLeft)}
+            >
+              <motion.div 
+                className="mb-8"
+                variants={getReducedMotionVariants(fadeInUp)}
+              >
                 <h1 className="text-4xl font-bold mb-4">Let's Start Your Next Project</h1>
                 <p className="text-xl text-muted-foreground">
                   Ready to grow your business? Get in touch for a free consultation
                 </p>
-              </div>
+              </motion.div>
 
-              <Card className="shadow-xl">
+              <motion.div
+                variants={getReducedMotionVariants(fadeInUp)}
+                whileHover={{ y: -2 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              >
+                <Card className="shadow-xl">
                 <CardContent className="p-8">
                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                      <FormField
-                        control={form.control}
-                        name="fullName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Full Name *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter your full name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email Address *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="your.email@example.com" type="email" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="companyName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Company Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Your company name (optional)" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="serviceInterested"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Service Interested In *</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <motion.form 
+                      onSubmit={form.handleSubmit(onSubmit)} 
+                      className="space-y-6"
+                      variants={getReducedMotionVariants(staggerContainer)}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      <motion.div variants={getReducedMotionVariants(fadeInUp)}>
+                        <FormField
+                          control={form.control}
+                          name="fullName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Full Name *</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a service" />
-                                </SelectTrigger>
+                                <motion.div
+                                  whileFocus={{ scale: 1.02 }}
+                                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                >
+                                  <Input placeholder="Enter your full name" {...field} />
+                                </motion.div>
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Digital Marketing">Digital Marketing</SelectItem>
-                                <SelectItem value="Web Design & Development">Web Design & Development</SelectItem>
-                                <SelectItem value="Branding & Identity">Branding & Identity</SelectItem>
-                                <SelectItem value="Content Creation">Content Creation</SelectItem>
-                                <SelectItem value="Multiple Services">Multiple Services</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
 
-                      <FormField
-                        control={form.control}
-                        name="budgetRange"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Budget Range *</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      {/* All other form fields with similar animation wrapping */}
+                      <motion.div variants={getReducedMotionVariants(fadeInUp)}>
+                        <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email Address *</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select your budget range" />
-                                </SelectTrigger>
+                                <motion.div whileFocus={{ scale: 1.02 }}>
+                                  <Input placeholder="your.email@example.com" type="email" {...field} />
+                                </motion.div>
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="$500 - $1,000">$500 - $1,000</SelectItem>
-                                <SelectItem value="$1,000 - $5,000">$1,000 - $5,000</SelectItem>
-                                <SelectItem value="$5,000 - $10,000">$5,000 - $10,000</SelectItem>
-                                <SelectItem value="$10,000+">$10,000+</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
 
-                      <FormField
-                        control={form.control}
-                        name="projectDetails"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Project Details *</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Tell us about your project..."
-                                className="min-h-[120px]"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {/* Rest of form fields with animations... */}
+                      <motion.div variants={getReducedMotionVariants(fadeInUp)}>
+                        <FormField
+                          control={form.control}
+                          name="companyName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Company Name</FormLabel>
+                              <FormControl>
+                                <motion.div whileFocus={{ scale: 1.02 }}>
+                                  <Input placeholder="Your company name (optional)" {...field} />
+                                </motion.div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
 
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
-                        size="lg"
-                        disabled={isSubmitting}
+                      <motion.div variants={getReducedMotionVariants(fadeInUp)}>
+                        <FormField
+                          control={form.control}
+                          name="serviceInterested"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Service Interested In *</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a service" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="Digital Marketing">Digital Marketing</SelectItem>
+                                  <SelectItem value="Web Design & Development">Web Design & Development</SelectItem>
+                                  <SelectItem value="Branding & Identity">Branding & Identity</SelectItem>
+                                  <SelectItem value="Content Creation">Content Creation</SelectItem>
+                                  <SelectItem value="Multiple Services">Multiple Services</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+
+                      <motion.div variants={getReducedMotionVariants(fadeInUp)}>
+                        <FormField
+                          control={form.control}
+                          name="budgetRange"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Budget Range *</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select your budget range" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="$500 - $1,000">$500 - $1,000</SelectItem>
+                                  <SelectItem value="$1,000 - $5,000">$1,000 - $5,000</SelectItem>
+                                  <SelectItem value="$5,000 - $10,000">$5,000 - $10,000</SelectItem>
+                                  <SelectItem value="$10,000+">$10,000+</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+
+                      <motion.div variants={getReducedMotionVariants(fadeInUp)}>
+                        <FormField
+                          control={form.control}
+                          name="projectDetails"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Project Details *</FormLabel>
+                              <FormControl>
+                                <motion.div whileFocus={{ scale: 1.02 }}>
+                                  <Textarea
+                                    placeholder="Tell us about your project..."
+                                    className="min-h-[120px]"
+                                    {...field}
+                                  />
+                                </motion.div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+
+                      <motion.div 
+                        variants={getReducedMotionVariants(fadeInUp)}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Sending Message...
-                          </>
-                        ) : (
-                          "Send Message"
-                        )}
-                      </Button>
-                    </form>
+                        <Button 
+                          type="submit" 
+                          className="w-full" 
+                          size="lg"
+                          disabled={isSubmitting}
+                        >
+                          <AnimatePresence mode="wait">
+                            {isSubmitting ? (
+                              <motion.div
+                                key="loading"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="flex items-center"
+                              >
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Sending Message...
+                              </motion.div>
+                            ) : (
+                              <motion.span
+                                key="send"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                              >
+                                Send Message
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </Button>
+                      </motion.div>
+                    </motion.form>
                   </Form>
                 </CardContent>
               </Card>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* RIGHT SIDE - CONTACT INFO */}
-            <div className="order-1 lg:order-2 space-y-8">
+            <motion.div 
+              className="order-1 lg:order-2 space-y-8"
+              variants={getReducedMotionVariants(fadeInRight)}
+            >
               {/* Company Details Card */}
               <Card className="shadow-lg">
                 <CardHeader>
@@ -322,8 +397,8 @@ const Contact = () => {
                   </Button>
                 </CardContent>
               </Card>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 

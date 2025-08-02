@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, Clock, ArrowRight, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useScrollAnimation, fadeInUp, staggerContainer, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
+import SkeletonCard from '@/components/animations/SkeletonCard';
 import Layout from '../components/Layout';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -33,6 +36,7 @@ const Blog = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 9;
   const { toast } = useToast();
+  const { ref: gridRef, controls: gridControls } = useScrollAnimation();
 
   const categories = ['All', 'Digital Marketing', 'Web Design', 'Branding', 'Case Studies'];
   const sortOptions = ['Latest', 'Popular', 'Oldest'];
@@ -147,11 +151,30 @@ const Blog = () => {
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-center min-h-[400px]">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Loading blog posts...</p>
-              </div>
+            {/* Header Skeleton */}
+            <div className="text-center mb-12">
+              <div className="h-12 bg-muted animate-pulse rounded w-96 mx-auto mb-4"></div>
+              <div className="h-6 bg-muted animate-pulse rounded w-[600px] mx-auto"></div>
+            </div>
+            
+            {/* Filter Bar Skeleton */}
+            <div className="mb-12">
+              <Card className="shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row gap-4 items-center">
+                    <div className="h-10 bg-muted animate-pulse rounded flex-1"></div>
+                    <div className="h-10 bg-muted animate-pulse rounded w-48"></div>
+                    <div className="h-10 bg-muted animate-pulse rounded w-32"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Grid Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <SkeletonCard key={index} variant="blog" />
+              ))}
             </div>
           </div>
         </div>
@@ -164,12 +187,25 @@ const Blog = () => {
       <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
         <div className="container mx-auto px-4">
           {/* Page Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Insights & Resources</h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <motion.div 
+            className="text-center mb-12"
+            initial="hidden"
+            animate="visible"
+            variants={getReducedMotionVariants(staggerContainer)}
+          >
+            <motion.h1 
+              className="text-4xl md:text-5xl font-bold mb-4"
+              variants={getReducedMotionVariants(fadeInUp)}
+            >
+              Insights & Resources
+            </motion.h1>
+            <motion.p 
+              className="text-xl text-muted-foreground max-w-2xl mx-auto"
+              variants={getReducedMotionVariants(fadeInUp)}
+            >
               Stay updated with the latest trends in digital marketing and design
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
           {/* Search & Filter Bar */}
           <div className="mb-12">
@@ -220,73 +256,105 @@ const Blog = () => {
           </div>
 
           {/* Blog Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {getCurrentPagePosts().map((post) => (
-              <Card key={post.id} className="shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group overflow-hidden">
-                {/* Featured Image */}
-                <div className="aspect-video overflow-hidden">
-                  <img
-                    src={post.featured_image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-
-                <CardContent className="p-6">
-                  {/* Category Badge */}
-                  <Badge className={`mb-3 ${categoryColors[post.category as keyof typeof categoryColors] || 'bg-gray-100 text-gray-800'}`}>
-                    {post.category}
-                  </Badge>
-
-                  {/* Title */}
-                  <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-200 line-clamp-2">
-                    {post.title}
-                  </h3>
-
-                  {/* Author & Date */}
-                  <div className="flex items-center gap-3 mb-3 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      {post.author_avatar ? (
-                        <img
-                          src={post.author_avatar}
-                          alt={post.author_name}
-                          className="w-6 h-6 rounded-full"
-                        />
-                      ) : (
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                          <User className="h-3 w-3 text-primary" />
-                        </div>
-                      )}
-                      <span>{post.author_name}</span>
+          <AnimatePresence mode="wait">
+            <motion.div 
+              ref={gridRef}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
+              initial="hidden"
+              animate={gridControls}
+              variants={getReducedMotionVariants(staggerContainer)}
+              key={`page-${currentPage}`}
+            >
+              {getCurrentPagePosts().map((post, index) => (
+                <motion.div
+                  key={post.id}
+                  variants={getReducedMotionVariants(fadeInUp)}
+                  whileHover={{ 
+                    y: -8,
+                    transition: { type: "spring", stiffness: 400, damping: 17 }
+                  }}
+                  className="h-full"
+                >
+                  <Card className="shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden h-full cursor-pointer">
+                    {/* Featured Image */}
+                    <div className="aspect-video overflow-hidden">
+                      <motion.img
+                        src={post.featured_image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
+                        alt={post.title}
+                        className="w-full h-full object-cover transition-transform duration-300"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.3 }}
+                      />
                     </div>
-                    <span>•</span>
-                    <span>{formatDate(post.published_date)}</span>
-                  </div>
 
-                  {/* Reading Time */}
-                  <div className="flex items-center gap-1 mb-4 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{post.reading_time} min read</span>
-                  </div>
+                    <CardContent className="p-6 flex flex-col h-full">
+                      {/* Category Badge */}
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      >
+                        <Badge className={`mb-3 ${categoryColors[post.category as keyof typeof categoryColors] || 'bg-gray-100 text-gray-800'}`}>
+                          {post.category}
+                        </Badge>
+                      </motion.div>
 
-                  {/* Excerpt */}
-                  <p className="text-muted-foreground mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
+                      {/* Title */}
+                      <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-200 line-clamp-2 flex-grow-0">
+                        {post.title}
+                      </h3>
 
-                  {/* Read More Link */}
-                  <Button
-                    variant="ghost"
-                    className="p-0 h-auto font-semibold text-primary hover:text-primary/80 group/button"
-                    onClick={() => handleReadMore(post)}
-                  >
-                    Read More
-                    <ArrowRight className="ml-1 h-4 w-4 group-hover/button:translate-x-1 transition-transform" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                      {/* Author & Date */}
+                      <div className="flex items-center gap-3 mb-3 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          {post.author_avatar ? (
+                            <img
+                              src={post.author_avatar}
+                              alt={post.author_name}
+                              className="w-6 h-6 rounded-full"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                              <User className="h-3 w-3 text-primary" />
+                            </div>
+                          )}
+                          <span>{post.author_name}</span>
+                        </div>
+                        <span>•</span>
+                        <span>{formatDate(post.published_date)}</span>
+                      </div>
+
+                      {/* Reading Time */}
+                      <div className="flex items-center gap-1 mb-4 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>{post.reading_time} min read</span>
+                      </div>
+
+                      {/* Excerpt */}
+                      <p className="text-muted-foreground mb-4 line-clamp-3 flex-grow">
+                        {post.excerpt}
+                      </p>
+
+                      {/* Read More Link */}
+                      <motion.div
+                        whileHover={{ x: 5 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                        className="mt-auto"
+                      >
+                        <Button
+                          variant="ghost"
+                          className="p-0 h-auto font-semibold text-primary hover:text-primary/80 group/button"
+                          onClick={() => handleReadMore(post)}
+                        >
+                          Read More
+                          <ArrowRight className="ml-1 h-4 w-4 group-hover/button:translate-x-1 transition-transform" />
+                        </Button>
+                      </motion.div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
 
           {/* No Results */}
           {filteredPosts.length === 0 && (

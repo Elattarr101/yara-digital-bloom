@@ -1,5 +1,7 @@
 import { ArrowRight, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { useParallax, fadeInUp, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
 import heroImage from '@/assets/hero-marketing.jpg';
 
 interface HeroSectionProps {
@@ -21,34 +23,77 @@ const HeroSection = ({
   backgroundImage = heroImage,
   variant = 'default'
 }: HeroSectionProps) => {
+  const y = useParallax(-0.3);
+  
   const renderContent = () => (
-    <div className={`space-y-8 ${variant === 'centered' ? 'text-center max-w-4xl mx-auto' : 'max-w-3xl'}`}>
-      <h1 className="hero-text animate-fade-in">
+    <motion.div 
+      className={`space-y-8 ${variant === 'centered' ? 'text-center max-w-4xl mx-auto' : 'max-w-3xl'}`}
+      initial="hidden"
+      animate="visible"
+      variants={getReducedMotionVariants({
+        hidden: { opacity: 0 },
+        visible: {
+          opacity: 1,
+          transition: {
+            staggerChildren: 0.2,
+            delayChildren: 0.1
+          }
+        }
+      })}
+    >
+      <motion.h1 
+        className="hero-text"
+        variants={getReducedMotionVariants(fadeInUp)}
+      >
         {title}
-      </h1>
+      </motion.h1>
       
-      <p className="subtitle-text animate-fade-in [animation-delay:200ms]">
+      <motion.p 
+        className="subtitle-text"
+        variants={getReducedMotionVariants(fadeInUp)}
+      >
         {subtitle}
-      </p>
+      </motion.p>
       
-      <div className={`flex flex-col sm:flex-row gap-4 animate-fade-in [animation-delay:400ms] ${variant === 'centered' ? 'justify-center' : ''}`}>
-        <Button variant="hero" size="xl" className="group">
-          {primaryCTA}
-          <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-        </Button>
+      <motion.div 
+        className={`flex flex-col sm:flex-row gap-4 ${variant === 'centered' ? 'justify-center' : ''}`}
+        variants={getReducedMotionVariants(fadeInUp)}
+      >
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
+          <Button variant="hero" size="xl" className="group">
+            {primaryCTA}
+            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+          </Button>
+        </motion.div>
         
         {showVideo ? (
-          <Button variant="outline-hero" size="xl" className="group">
-            <Play size={20} className="group-hover:scale-110 transition-transform" />
-            Watch Demo
-          </Button>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          >
+            <Button variant="outline-hero" size="xl" className="group">
+              <Play size={20} className="group-hover:scale-110 transition-transform" />
+              Watch Demo
+            </Button>
+          </motion.div>
         ) : (
-          <Button variant="outline-hero" size="xl">
-            {secondaryCTA}
-          </Button>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          >
+            <Button variant="outline-hero" size="xl">
+              {secondaryCTA}
+            </Button>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 
   if (variant === 'minimal') {
@@ -63,10 +108,11 @@ const HeroSection = ({
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background */}
-      <div 
+      {/* Background with parallax */}
+      <motion.div 
         className="absolute inset-0 z-0"
         style={{
+          y,
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -75,7 +121,7 @@ const HeroSection = ({
       >
         {/* Gradient overlay */}
         <div className="absolute inset-0 gradient-hero opacity-90"></div>
-      </div>
+      </motion.div>
 
       {/* Content */}
       <div className="relative z-10 container-custom text-background">

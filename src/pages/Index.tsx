@@ -2,6 +2,9 @@ import Layout from '@/components/Layout';
 import { TrendingUp, Layout as LayoutIcon, Palette, Share2, ArrowRight, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { useScrollAnimation, fadeInUp, staggerContainer, scaleIn, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
+import AnimatedCounter from '@/components/animations/AnimatedCounter';
 import heroImage from '@/assets/hero-marketing.jpg';
 
 const Index = () => {
@@ -53,6 +56,18 @@ const Index = () => {
       image: 'gradient-from-pink-500-to-rose-500'
     }
   ];
+
+  const stats = [
+    { number: 500, suffix: '+', label: 'Successful Projects' },
+    { number: 98, suffix: '%', label: 'Client Satisfaction' },
+    { number: 150, suffix: '+', label: 'Happy Clients' },
+    { number: 24, suffix: '/7', label: 'Support Available' }
+  ];
+
+  const { ref: servicesRef, controls: servicesControls } = useScrollAnimation();
+  const { ref: statsRef, controls: statsControls } = useScrollAnimation();
+  const { ref: logoRef, controls: logoControls } = useScrollAnimation();
+  const { ref: workRef, controls: workControls } = useScrollAnimation();
 
   return (
     <Layout>
@@ -113,44 +128,107 @@ const Index = () => {
       {/* Services Preview Section */}
       <section className="section-padding">
         <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+          <motion.div 
+            className="text-center mb-16"
+            initial="hidden"
+            animate="visible"
+            variants={getReducedMotionVariants(staggerContainer)}
+          >
+            <motion.h2 
+              className="text-3xl lg:text-4xl font-bold mb-6"
+              variants={getReducedMotionVariants(fadeInUp)}
+            >
               Our Expertise
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in [animation-delay:200ms]">
+            </motion.h2>
+            <motion.p 
+              className="text-xl text-muted-foreground max-w-3xl mx-auto"
+              variants={getReducedMotionVariants(fadeInUp)}
+            >
               We combine creativity with strategy to deliver comprehensive digital solutions that drive measurable results.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <motion.div 
+            ref={servicesRef}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            initial="hidden"
+            animate={servicesControls}
+            variants={getReducedMotionVariants(staggerContainer)}
+          >
             {services.map((service, index) => {
               const IconComponent = service.icon;
               return (
-                <Card 
-                  key={index} 
-                  className="group hover:shadow-large transition-all duration-300 hover:-translate-y-2 hover:scale-105 border-0 shadow-soft animate-fade-in"
-                  style={{ animationDelay: `${index * 100 + 400}ms` }}
+                <motion.div
+                  key={index}
+                  variants={getReducedMotionVariants(scaleIn)}
+                  whileHover={{ 
+                    y: -8,
+                    scale: 1.02,
+                    transition: { type: "spring", stiffness: 400, damping: 17 }
+                  }}
+                  className="h-full"
                 >
-                  <CardContent className="p-8 text-center">
-                    <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-secondary/20 group-hover:scale-110 transition-all duration-300">
-                      <IconComponent size={32} className="text-secondary" />
-                    </div>
-                    
-                    <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
-                    <p className="text-secondary font-medium mb-4">{service.tagline}</p>
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                      {service.description}
-                    </p>
-                    
-                    <Button variant="ghost" className="group/btn text-secondary hover:text-secondary p-0">
-                      Learn More
-                      <ArrowRight size={16} className="ml-1 group-hover/btn:translate-x-1 transition-transform" />
-                    </Button>
-                  </CardContent>
-                </Card>
+                  <Card className="group h-full border-0 shadow-soft hover:shadow-xl transition-all duration-300 cursor-pointer">
+                    <CardContent className="p-8 text-center h-full flex flex-col">
+                      <motion.div 
+                        className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-secondary/20 transition-all duration-300"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      >
+                        <IconComponent size={32} className="text-secondary" />
+                      </motion.div>
+                      
+                      <h3 className="text-xl font-semibold mb-2 group-hover:text-secondary transition-colors">{service.title}</h3>
+                      <p className="text-secondary font-medium mb-4">{service.tagline}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">
+                        {service.description}
+                      </p>
+                      
+                      <motion.div
+                        whileHover={{ x: 5 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      >
+                        <Button variant="ghost" className="group/btn text-secondary hover:text-secondary p-0">
+                          Learn More
+                          <ArrowRight size={16} className="ml-1 group-hover/btn:translate-x-1 transition-transform" />
+                        </Button>
+                      </motion.div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="section-padding bg-primary text-primary-foreground">
+        <div className="container-custom">
+          <motion.div 
+            ref={statsRef}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+            initial="hidden"
+            animate={statsControls}
+            variants={getReducedMotionVariants(staggerContainer)}
+          >
+            {stats.map((stat, index) => (
+              <motion.div 
+                key={index}
+                className="text-center"
+                variants={getReducedMotionVariants(fadeInUp)}
+              >
+                <div className="text-4xl md:text-5xl font-bold mb-2">
+                  <AnimatedCounter 
+                    end={stat.number} 
+                    suffix={stat.suffix}
+                    className="text-primary-foreground"
+                  />
+                </div>
+                <p className="text-primary-foreground/80">{stat.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
