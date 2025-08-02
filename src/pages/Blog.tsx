@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, Clock, ArrowRight, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { Search, Clock, ArrowRight, ChevronLeft, ChevronRight, User, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollAnimation, fadeInUp, staggerContainer, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
 import SkeletonCard from '@/components/animations/SkeletonCard';
 import Layout from '../components/Layout';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface BlogPost {
   id: string;
@@ -30,6 +31,7 @@ const Blog = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('Latest');
@@ -37,6 +39,18 @@ const Blog = () => {
   const postsPerPage = 9;
   const { toast } = useToast();
   const { ref: gridRef, controls: gridControls } = useScrollAnimation();
+
+  // Debug logging
+  console.log('Blog component rendered', {
+    blogPosts: blogPosts.length,
+    filteredPosts: filteredPosts.length,
+    loading,
+    error,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+    currentPage
+  });
 
   const categories = ['All', 'Digital Marketing', 'Web Design', 'Branding', 'Case Studies'];
   const sortOptions = ['Latest', 'Popular', 'Oldest'];
@@ -57,17 +71,28 @@ const Blog = () => {
   }, [blogPosts, searchQuery, selectedCategory, sortBy]);
 
   const fetchBlogPosts = async () => {
+    console.log('Fetching blog posts...');
     try {
+      setError(null);
       const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
         .eq('is_published', true)
         .order('published_date', { ascending: false });
 
-      if (error) throw error;
-      setBlogPosts(data || []);
+      console.log('Supabase response:', { data, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      const posts = data || [];
+      console.log(`Successfully fetched ${posts.length} blog posts:`, posts);
+      setBlogPosts(posts);
     } catch (error) {
       console.error('Error fetching blog posts:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch blog posts');
       toast({
         title: "Error loading blog posts",
         description: "Please try again later.",
@@ -79,6 +104,7 @@ const Blog = () => {
   };
 
   const filterAndSortPosts = () => {
+    console.log('Filtering and sorting posts...', { blogPosts: blogPosts.length, searchQuery, selectedCategory, sortBy });
     let filtered = [...blogPosts];
 
     // Filter by search query
@@ -108,6 +134,7 @@ const Blog = () => {
       }
     });
 
+    console.log(`Filtered posts: ${filtered.length}`, filtered);
     setFilteredPosts(filtered);
     setCurrentPage(1);
   };
@@ -149,7 +176,7 @@ const Blog = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
+        <div className="min-h-screen bg-gradient-to-br from-background to-background/20 py-16">
           <div className="container mx-auto px-4">
             {/* Header Skeleton */}
             <div className="text-center mb-12">
@@ -182,30 +209,58 @@ const Blog = () => {
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gradient-to-br from-background to-background/20 py-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto">
+              <Alert className="mb-8">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Error loading blog posts: {error}
+                </AlertDescription>
+              </Alert>
+              <div className="text-center">
+                <Button onClick={() => {
+                  setError(null);
+                  setLoading(true);
+                  fetchBlogPosts();
+                }}>
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
+      <div className="min-h-screen bg-gradient-to-br from-background to-background/20 py-16">
         <div className="container mx-auto px-4">
+          {/* Debug Info */}
+          {process.env.NODE_ENV === 'development' && (
+            <Alert className="mb-8">
+              <AlertDescription>
+                Debug: {blogPosts.length} total posts, {filteredPosts.length} filtered posts, 
+                Page {currentPage} of {Math.ceil(filteredPosts.length / postsPerPage)}
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Page Header */}
-          <motion.div 
-            className="text-center mb-12"
-            initial="hidden"
-            animate="visible"
-            variants={getReducedMotionVariants(staggerContainer)}
-          >
-            <motion.h1 
-              className="text-4xl md:text-5xl font-bold mb-4"
-              variants={getReducedMotionVariants(fadeInUp)}
-            >
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Insights & Resources
-            </motion.h1>
-            <motion.p 
-              className="text-xl text-muted-foreground max-w-2xl mx-auto"
-              variants={getReducedMotionVariants(fadeInUp)}
-            >
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Stay updated with the latest trends in digital marketing and design
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
 
           {/* Search & Filter Bar */}
           <div className="mb-12">
@@ -256,47 +311,24 @@ const Blog = () => {
           </div>
 
           {/* Blog Grid */}
-          <AnimatePresence mode="wait">
-            <motion.div 
-              ref={gridRef}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-              initial="hidden"
-              animate={gridControls}
-              variants={getReducedMotionVariants(staggerContainer)}
-              key={`page-${currentPage}`}
-            >
-              {getCurrentPagePosts().map((post, index) => (
-                <motion.div
-                  key={post.id}
-                  variants={getReducedMotionVariants(fadeInUp)}
-                  whileHover={{ 
-                    y: -8,
-                    transition: { type: "spring", stiffness: 400, damping: 17 }
-                  }}
-                  className="h-full"
-                >
-                  <Card className="shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden h-full cursor-pointer">
-                    {/* Featured Image */}
-                    <div className="aspect-video overflow-hidden">
-                      <motion.img
-                        src={post.featured_image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
-                        alt={post.title}
-                        className="w-full h-full object-cover transition-transform duration-300"
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {getCurrentPagePosts().map((post, index) => (
+              <div key={post.id} className="h-full">
+                <Card className="shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden h-full cursor-pointer">
+                  {/* Featured Image */}
+                  <div className="aspect-video overflow-hidden">
+                    <img
+                      src={post.featured_image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
+                      alt={post.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
 
-                    <CardContent className="p-6 flex flex-col h-full">
-                      {/* Category Badge */}
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                      >
-                        <Badge className={`mb-3 ${categoryColors[post.category as keyof typeof categoryColors] || 'bg-gray-100 text-gray-800'}`}>
-                          {post.category}
-                        </Badge>
-                      </motion.div>
+                  <CardContent className="p-6 flex flex-col h-full">
+                    {/* Category Badge */}
+                    <Badge className={`mb-3 ${categoryColors[post.category as keyof typeof categoryColors] || 'bg-gray-100 text-gray-800'}`}>
+                      {post.category}
+                    </Badge>
 
                       {/* Title */}
                       <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-200 line-clamp-2 flex-grow-0">
@@ -334,27 +366,22 @@ const Blog = () => {
                         {post.excerpt}
                       </p>
 
-                      {/* Read More Link */}
-                      <motion.div
-                        whileHover={{ x: 5 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                        className="mt-auto"
+                    {/* Read More Link */}
+                    <div className="mt-auto">
+                      <Button
+                        variant="ghost"
+                        className="p-0 h-auto font-semibold text-primary hover:text-primary/80 group/button"
+                        onClick={() => handleReadMore(post)}
                       >
-                        <Button
-                          variant="ghost"
-                          className="p-0 h-auto font-semibold text-primary hover:text-primary/80 group/button"
-                          onClick={() => handleReadMore(post)}
-                        >
-                          Read More
-                          <ArrowRight className="ml-1 h-4 w-4 group-hover/button:translate-x-1 transition-transform" />
-                        </Button>
-                      </motion.div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                        Read More
+                        <ArrowRight className="ml-1 h-4 w-4 group-hover/button:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
 
           {/* No Results */}
           {filteredPosts.length === 0 && (
