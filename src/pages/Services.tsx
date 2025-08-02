@@ -1,181 +1,176 @@
 import Layout from '@/components/Layout';
-import HeroSection from '@/components/HeroSection';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Search, Users, PenTool, TrendingUp, Smartphone, Globe } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { TrendingUp, Code, Palette, FileText, ArrowRight, CheckCircle } from 'lucide-react';
 
 const Services = () => {
   const services = [
     {
-      icon: Search,
-      title: 'SEO & Search Marketing',
-      description: 'Dominate search results with our comprehensive SEO strategies and paid search campaigns.',
-      features: ['Keyword Research', 'On-Page Optimization', 'Link Building', 'Local SEO', 'PPC Management'],
-      price: 'Starting at $2,500/month'
-    },
-    {
-      icon: Users,
-      title: 'Social Media Marketing',
-      description: 'Build engaged communities and drive conversions across all major social platforms.',
-      features: ['Content Strategy', 'Community Management', 'Paid Social Ads', 'Influencer Partnerships', 'Analytics & Reporting'],
-      price: 'Starting at $1,800/month'
-    },
-    {
-      icon: PenTool,
-      title: 'Content Marketing',
-      description: 'Create compelling content that educates, engages, and converts your target audience.',
-      features: ['Blog Writing', 'Video Production', 'Email Campaigns', 'Whitepapers & eBooks', 'Content Distribution'],
-      price: 'Starting at $2,000/month'
-    },
-    {
+      id: 'digital-marketing',
       icon: TrendingUp,
-      title: 'Marketing Analytics',
-      description: 'Make data-driven decisions with comprehensive tracking and performance optimization.',
-      features: ['Conversion Tracking', 'Custom Dashboards', 'A/B Testing', 'ROI Analysis', 'Performance Reports'],
-      price: 'Starting at $1,200/month'
+      title: 'DIGITAL MARKETING',
+      description: 'Drive traffic, generate leads, and boost sales with our proven digital marketing strategies',
+      included: [
+        'SEO Optimization',
+        'PPC Advertising', 
+        'Email Marketing',
+        'Analytics & Reporting'
+      ],
+      keyResult: 'Average 300% ROI increase for our clients',
+      price: 'Starting from $500/month'
     },
     {
-      icon: Smartphone,
-      title: 'Mobile Marketing',
-      description: 'Reach customers on-the-go with targeted mobile campaigns and app marketing strategies.',
-      features: ['App Store Optimization', 'Mobile Ads', 'SMS Marketing', 'Push Notifications', 'Mobile Analytics'],
-      price: 'Starting at $1,500/month'
+      id: 'web-design',
+      icon: Code,
+      title: 'WEB DESIGN & DEVELOPMENT',
+      description: 'Beautiful, responsive websites that convert visitors into customers',
+      included: [
+        'Custom Design',
+        'Mobile Optimization',
+        'E-commerce Solutions',
+        'CMS Integration'
+      ],
+      keyResult: '95% of our websites load in under 3 seconds',
+      price: 'Starting from $1,000'
     },
     {
-      icon: Globe,
-      title: 'Web Development',
-      description: 'Build fast, responsive websites optimized for conversions and user experience.',
-      features: ['Custom Website Design', 'E-commerce Development', 'Landing Pages', 'Performance Optimization', 'Maintenance & Support'],
-      price: 'Starting at $5,000/project'
-    }
-  ];
-
-  const process = [
-    {
-      step: '01',
-      title: 'Discovery & Strategy',
-      description: 'We start by understanding your business, goals, and target audience to create a customized strategy.'
+      id: 'branding',
+      icon: Palette,
+      title: 'BRANDING & IDENTITY',
+      description: 'Create a memorable brand that stands out from the competition',
+      included: [
+        'Logo Design',
+        'Brand Guidelines',
+        'Business Cards',
+        'Marketing Materials'
+      ],
+      keyResult: 'Brands see 40% increase in recognition within 6 months',
+      price: 'Starting from $300'
     },
     {
-      step: '02',
-      title: 'Implementation',
-      description: 'Our expert team executes the strategy using proven methodologies and cutting-edge tools.'
-    },
-    {
-      step: '03',
-      title: 'Optimization',
-      description: 'We continuously monitor performance and optimize campaigns for maximum ROI and growth.'
-    },
-    {
-      step: '04',
-      title: 'Scale & Growth',
-      description: 'As results improve, we scale successful strategies and explore new growth opportunities.'
+      id: 'content-creation',
+      icon: FileText,
+      title: 'CONTENT CREATION',
+      description: 'Engaging content that tells your story and connects with your audience',
+      included: [
+        'Copywriting',
+        'Photography',
+        'Video Production',
+        'Social Media Content'
+      ],
+      keyResult: 'Content generates 3x more engagement than industry average',
+      price: 'Starting from $200'
     }
   ];
 
   return (
     <Layout>
-      <HeroSection
-        title="Marketing Services That Drive Real Results"
-        subtitle="From SEO and social media to content marketing and analytics, we offer comprehensive digital marketing solutions tailored to your business goals."
-        variant="minimal"
-        primaryCTA="Get Custom Quote"
-        secondaryCTA="Schedule Consultation"
-      />
+      {/* Page Header */}
+      <section className="section-padding bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]"></div>
+        <div className="container-custom relative">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              Our Services
+            </h1>
+            <p className="text-xl lg:text-2xl text-muted-foreground">
+              Comprehensive digital solutions to grow your business
+            </p>
+          </div>
+        </div>
+      </section>
 
-      {/* Services Grid */}
+      {/* Services Accordion */}
       <section className="section-padding">
         <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Our Services
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Comprehensive marketing solutions designed to accelerate your business growth and maximize your return on investment.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Accordion type="single" collapsible className="space-y-8">
             {services.map((service, index) => {
               const IconComponent = service.icon;
+              const isEven = index % 2 === 0;
+              
               return (
-                <Card key={index} className="group hover:shadow-large transition-all duration-300 hover:-translate-y-2 border-0 shadow-medium">
-                  <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-secondary/20 transition-colors">
-                      <IconComponent size={24} className="text-secondary" />
+                <AccordionItem 
+                  key={service.id} 
+                  value={service.id}
+                  className="border-none bg-card rounded-2xl shadow-medium hover:shadow-large transition-all duration-300"
+                >
+                  <AccordionTrigger className="p-8 hover:no-underline group">
+                    <div className={`flex items-center gap-8 w-full ${isEven ? 'flex-row' : 'flex-row-reverse'} text-left`}>
+                      <div className="flex-shrink-0">
+                        <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <IconComponent size={32} className="text-primary group-hover:text-secondary transition-colors" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold mb-2 group-hover:text-primary transition-colors">
+                          {service.title}
+                        </h3>
+                        <p className="text-lg text-muted-foreground">
+                          {service.description}
+                        </p>
+                      </div>
                     </div>
-                    
-                    <h3 className="text-xl font-semibold mb-4">{service.title}</h3>
-                    <p className="text-muted-foreground mb-6">{service.description}</p>
-                    
-                    <ul className="space-y-2 mb-6">
-                      {service.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center text-sm text-muted-foreground">
-                          <div className="w-1.5 h-1.5 bg-secondary rounded-full mr-3"></div>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    <div className="border-t pt-6">
-                      <p className="text-sm font-semibold text-primary mb-4">{service.price}</p>
-                      <Button className="w-full group">
-                        Learn More
-                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                      </Button>
+                  </AccordionTrigger>
+                  
+                  <AccordionContent className="px-8 pb-8">
+                    <div className={`grid md:grid-cols-3 gap-8 ${isEven ? '' : 'md:grid-flow-col-dense'}`}>
+                      {/* What's Included */}
+                      <div className="md:col-span-1">
+                        <h4 className="font-semibold text-lg mb-4 text-primary">What's Included</h4>
+                        <ul className="space-y-3">
+                          {service.included.map((item, itemIndex) => (
+                            <li key={itemIndex} className="flex items-start gap-3">
+                              <CheckCircle size={20} className="text-secondary mt-0.5 flex-shrink-0" />
+                              <span className="text-muted-foreground">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {/* Key Result & Price */}
+                      <div className="md:col-span-2 space-y-6">
+                        <div className="bg-secondary/10 rounded-xl p-6">
+                          <h4 className="font-semibold text-lg mb-3 text-secondary">Key Result</h4>
+                          <p className="text-lg font-medium">{service.keyResult}</p>
+                        </div>
+                        
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Starting Price</p>
+                            <p className="text-2xl font-bold text-accent">{service.price}</p>
+                          </div>
+                          <Button size="lg" className="group">
+                            Learn More
+                            <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </AccordionContent>
+                </AccordionItem>
               );
             })}
-          </div>
+          </Accordion>
         </div>
       </section>
 
-      {/* Process */}
-      <section className="section-padding bg-muted/30">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Our Process
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              A proven methodology that ensures successful outcomes for every client project.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {process.map((step, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6">
-                  {step.step}
-                </div>
-                <h3 className="text-lg font-semibold mb-4">{step.title}</h3>
-                <p className="text-muted-foreground">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section-padding bg-primary text-primary-foreground">
+      {/* Bottom CTA */}
+      <section className="section-padding bg-gradient-to-r from-primary via-secondary to-accent text-white">
         <div className="container-custom">
           <div className="text-center max-w-4xl mx-auto">
             <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Ready to Transform Your Marketing?
+              Not sure which service you need?
             </h2>
-            <p className="text-xl mb-8 text-primary-foreground/90">
-              Let's discuss your goals and create a custom marketing strategy that drives real results for your business.
+            <p className="text-xl mb-8 text-white/90">
+              Schedule a free consultation to discuss your goals and find the perfect solution for your business.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="secondary" size="xl">
-                Get Free Consultation
-              </Button>
-              <Button variant="outline" size="xl" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                Download Service Guide
-              </Button>
-            </div>
+            <Button 
+              variant="secondary" 
+              size="xl" 
+              className="bg-white text-primary hover:bg-white/90"
+            >
+              Schedule Free Consultation
+            </Button>
           </div>
         </div>
       </section>
