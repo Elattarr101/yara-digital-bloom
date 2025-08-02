@@ -171,15 +171,15 @@ const Index = () => {
                   <Card className="group h-full border-0 shadow-soft hover:shadow-xl transition-all duration-300 cursor-pointer">
                     <CardContent className="p-8 text-center h-full flex flex-col">
                       <motion.div 
-                        className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-secondary/20 transition-all duration-300"
+                        className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-all duration-300"
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       >
-                        <IconComponent size={32} className="text-secondary" />
+                        <IconComponent size={32} className="text-primary" />
                       </motion.div>
                       
-                      <h3 className="text-xl font-semibold mb-2 group-hover:text-secondary transition-colors">{service.title}</h3>
-                      <p className="text-secondary font-medium mb-4">{service.tagline}</p>
+                      <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{service.title}</h3>
+                      <p className="text-primary font-medium mb-4">{service.tagline}</p>
                       <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">
                         {service.description}
                       </p>

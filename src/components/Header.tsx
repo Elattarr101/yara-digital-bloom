@@ -30,8 +30,8 @@ const Header = () => {
       className={cn(
         'fixed top-0 w-full z-50 transition-all duration-300',
         isScrolled 
-          ? 'bg-background/95 backdrop-blur-lg shadow-soft' 
-          : 'bg-transparent'
+          ? 'bg-background/98 backdrop-blur-lg shadow-soft border-b border-border/20' 
+          : 'bg-background/60 backdrop-blur-sm'
       )}
     >
       <div className="container-custom">
@@ -51,7 +51,7 @@ const Header = () => {
               <a
                 key={link.name}
                 href={link.href}
-                className="text-foreground hover:text-secondary transition-smooth font-medium"
+                className="text-foreground hover:text-primary transition-smooth font-medium"
               >
                 {link.name}
               </a>
@@ -69,7 +69,7 @@ const Header = () => {
           <div className="lg:hidden">
             <button
               type="button"
-              className="p-2 text-foreground hover:text-secondary transition-smooth"
+              className="p-2 text-foreground hover:text-primary transition-smooth"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
             >
@@ -90,7 +90,7 @@ const Header = () => {
               <a
                 key={link.name}
                 href={link.href}
-                className="block px-4 py-3 text-foreground hover:text-secondary hover:bg-muted/50 transition-smooth font-medium rounded-lg mx-2"
+                className="block px-4 py-3 text-foreground hover:text-primary hover:bg-muted/50 transition-smooth font-medium rounded-lg mx-2"
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
