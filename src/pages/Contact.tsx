@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MapPin, Phone, Mail, Clock, MessageSquare, Users, Video, Facebook, Instagram, Linkedin, Twitter, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { MapPin, Phone, Mail, Clock, MessageSquare, Users, Video, Facebook, Instagram, Linkedin, Twitter, Loader2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollAnimation, fadeInUp, fadeInLeft, fadeInRight, staggerContainer, getReducedMotionVariants } from '@/hooks/useScrollAnimation';
 import Layout from '../components/Layout';
@@ -28,6 +29,7 @@ const contactFormSchema = z.object({
     message: "Please select a budget range",
   }),
   projectDetails: z.string().min(10, "Please provide more details about your project"),
+  honeypot: z.string().optional(), // Security field
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -35,6 +37,7 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const form = useForm<ContactFormData>({
@@ -46,39 +49,51 @@ const Contact = () => {
       serviceInterested: undefined,
       budgetRange: undefined,
       projectDetails: "",
+      honeypot: "", // Security field - should remain empty
     },
   });
 
   const onSubmit = async (values: ContactFormData) => {
     setIsSubmitting(true);
+    setSubmissionError(null);
     
     try {
-      const { error } = await supabase
-        .from('contact_submissions')
-        .insert({
+      // Call the edge function instead of direct database insert
+      const { data, error } = await supabase.functions.invoke('contact-form', {
+        body: {
           full_name: values.fullName,
           email: values.email,
           company_name: values.companyName || null,
           service_interested: values.serviceInterested,
           budget_range: values.budgetRange,
           project_details: values.projectDetails,
-        });
+          honeypot: values.honeypot, // Security field
+        },
+      });
 
       if (error) {
-        throw error;
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Failed to send message');
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
       }
 
       setShowSuccessModal(true);
       form.reset();
       toast({
         title: "Message sent successfully!",
-        description: "We'll get back to you within 24 hours.",
+        description: "We'll get back to you within 24 hours. Check your email for confirmation.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting form:', error);
+      const errorMessage = error.message || 'Something went wrong. Please try again later.';
+      setSubmissionError(errorMessage);
+      
       toast({
         title: "Error sending message",
-        description: "Please try again later.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -124,15 +139,23 @@ const Contact = () => {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
                 <Card className="shadow-xl">
-                <CardContent className="p-8">
-                  <Form {...form}>
-                    <motion.form 
-                      onSubmit={form.handleSubmit(onSubmit)} 
-                      className="space-y-6"
-                      variants={getReducedMotionVariants(staggerContainer)}
-                      initial="hidden"
-                      animate="visible"
-                    >
+                  <CardContent className="p-8">
+                    {/* Error Alert */}
+                    {submissionError && (
+                      <Alert className="mb-6" variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{submissionError}</AlertDescription>
+                      </Alert>
+                    )}
+                    
+                    <Form {...form}>
+                      <motion.form 
+                        onSubmit={form.handleSubmit(onSubmit)} 
+                        className="space-y-6"
+                        variants={getReducedMotionVariants(staggerContainer)}
+                        initial="hidden"
+                        animate="visible"
+                      >
                       <motion.div variants={getReducedMotionVariants(fadeInUp)}>
                         <FormField
                           control={form.control}
@@ -265,7 +288,21 @@ const Contact = () => {
                             </FormItem>
                           )}
                         />
-                      </motion.div>
+                        </motion.div>
+
+                        {/* Honeypot field for spam protection - hidden from users */}
+                        <FormField
+                          control={form.control}
+                          name="honeypot"
+                          render={({ field }) => (
+                            <FormItem style={{ display: 'none' }}>
+                              <FormLabel>Leave this field empty</FormLabel>
+                              <FormControl>
+                                <Input {...field} tabIndex={-1} autoComplete="off" />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
 
                       <motion.div 
                         variants={getReducedMotionVariants(fadeInUp)}
