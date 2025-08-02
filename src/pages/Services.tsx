@@ -95,7 +95,7 @@ const Services = () => {
                   className="border-none bg-card rounded-2xl shadow-medium hover:shadow-large transition-all duration-300"
                 >
                   <AccordionTrigger className="p-8 hover:no-underline group">
-                    <div className={`flex items-center gap-8 w-full ${isEven ? 'flex-row' : 'flex-row-reverse'} text-left`}>
+                    <div className="flex items-center gap-8 w-full text-left">
                       <div className="flex-shrink-0">
                         <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                           <IconComponent size={32} className="text-primary group-hover:text-secondary transition-colors" />
