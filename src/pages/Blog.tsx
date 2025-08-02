@@ -1,255 +1,370 @@
-import Layout from '@/components/Layout';
-import HeroSection from '@/components/HeroSection';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Calendar, Clock, ArrowRight, Search, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Search, Clock, ArrowRight, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import Layout from '../components/Layout';
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  featured_image?: string;
+  author_name: string;
+  author_avatar?: string;
+  category: string;
+  reading_time: number;
+  published_date: string;
+  view_count: number;
+}
 
 const Blog = () => {
-  const featuredPost = {
-    title: 'The Future of Digital Marketing: AI and Automation Trends for 2024',
-    excerpt: 'Discover how artificial intelligence and marketing automation are reshaping the digital landscape and what it means for your business strategy.',
-    author: 'Sarah Johnson',
-    date: 'December 15, 2024',
-    readTime: '8 min read',
-    category: 'Strategy',
-    image: 'gradient-from-purple-600-to-blue-600'
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [sortBy, setSortBy] = useState('Latest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 9;
+  const { toast } = useToast();
+
+  const categories = ['All', 'Digital Marketing', 'Web Design', 'Branding', 'Case Studies'];
+  const sortOptions = ['Latest', 'Popular', 'Oldest'];
+
+  const categoryColors = {
+    'Digital Marketing': 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+    'Web Design': 'bg-purple-100 text-purple-800 hover:bg-purple-200',
+    'Branding': 'bg-pink-100 text-pink-800 hover:bg-pink-200',
+    'Case Studies': 'bg-green-100 text-green-800 hover:bg-green-200',
   };
 
-  const blogPosts = [
-    {
-      title: 'How to Optimize Your Website for Voice Search in 2024',
-      excerpt: 'Voice search is changing how people find information online. Learn the strategies to optimize your content for voice queries.',
-      author: 'Michael Chen',
-      date: 'December 12, 2024',
-      readTime: '6 min read',
-      category: 'SEO',
-      image: 'gradient-from-blue-500-to-teal-500'
-    },
-    {
-      title: 'Social Media ROI: Measuring What Actually Matters',
-      excerpt: 'Beyond likes and follows - discover the metrics that truly indicate social media success and drive business growth.',
-      author: 'Emily Rodriguez',
-      date: 'December 10, 2024',
-      readTime: '5 min read',
-      category: 'Social Media',
-      image: 'gradient-from-pink-500-to-rose-500'
-    },
-    {
-      title: 'Email Marketing Automation That Converts',
-      excerpt: 'Build email sequences that nurture leads and drive sales with our proven automation strategies and templates.',
-      author: 'David Kim',
-      date: 'December 8, 2024',
-      readTime: '7 min read',
-      category: 'Email Marketing',
-      image: 'gradient-from-orange-500-to-red-500'
-    },
-    {
-      title: 'The Complete Guide to Google Ads Optimization',
-      excerpt: 'Maximize your ad spend efficiency with advanced bidding strategies, keyword research, and campaign optimization techniques.',
-      author: 'Sarah Johnson',
-      date: 'December 5, 2024',
-      readTime: '10 min read',
-      category: 'PPC',
-      image: 'gradient-from-green-500-to-blue-500'
-    },
-    {
-      title: 'Content Marketing Trends That Will Dominate 2024',
-      excerpt: 'Stay ahead of the curve with emerging content formats, distribution strategies, and engagement tactics.',
-      author: 'Michael Chen',
-      date: 'December 3, 2024',
-      readTime: '6 min read',
-      category: 'Content Marketing',
-      image: 'gradient-from-indigo-500-to-purple-500'
-    },
-    {
-      title: 'Local SEO Strategies for Multi-Location Businesses',
-      excerpt: 'Scale your local search presence across multiple locations with proven strategies and best practices.',
-      author: 'Emily Rodriguez',
-      date: 'December 1, 2024',
-      readTime: '8 min read',
-      category: 'Local SEO',
-      image: 'gradient-from-yellow-500-to-orange-500'
-    }
-  ];
+  useEffect(() => {
+    fetchBlogPosts();
+  }, []);
 
-  const categories = ['All', 'Strategy', 'SEO', 'Social Media', 'Email Marketing', 'PPC', 'Content Marketing', 'Local SEO'];
+  useEffect(() => {
+    filterAndSortPosts();
+  }, [blogPosts, searchQuery, selectedCategory, sortBy]);
+
+  const fetchBlogPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('is_published', true)
+        .order('published_date', { ascending: false });
+
+      if (error) throw error;
+      setBlogPosts(data || []);
+    } catch (error) {
+      console.error('Error fetching blog posts:', error);
+      toast({
+        title: "Error loading blog posts",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterAndSortPosts = () => {
+    let filtered = [...blogPosts];
+
+    // Filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(post =>
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.author_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Filter by category
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(post => post.category === selectedCategory);
+    }
+
+    // Sort posts
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'Popular':
+          return b.view_count - a.view_count;
+        case 'Oldest':
+          return new Date(a.published_date).getTime() - new Date(b.published_date).getTime();
+        case 'Latest':
+        default:
+          return new Date(b.published_date).getTime() - new Date(a.published_date).getTime();
+      }
+    });
+
+    setFilteredPosts(filtered);
+    setCurrentPage(1);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const getCurrentPagePosts = () => {
+    const startIndex = (currentPage - 1) * postsPerPage;
+    const endIndex = startIndex + postsPerPage;
+    return filteredPosts.slice(startIndex, endIndex);
+  };
+
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+  const handleReadMore = async (post: BlogPost) => {
+    // Increment view count
+    try {
+      await supabase
+        .from('blog_posts')
+        .update({ view_count: post.view_count + 1 })
+        .eq('id', post.id);
+    } catch (error) {
+      console.error('Error updating view count:', error);
+    }
+    
+    // Navigate to blog post (placeholder for now)
+    toast({
+      title: "Coming Soon",
+      description: `Individual blog post pages will be available soon. Viewing: ${post.title}`,
+    });
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading blog posts...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
-      <HeroSection
-        title="Marketing Insights & Industry Trends"
-        subtitle="Stay ahead of the curve with expert insights, proven strategies, and the latest trends in digital marketing from our team of specialists."
-        variant="minimal"
-        primaryCTA="Subscribe to Newsletter"
-        secondaryCTA="Browse Categories"
-      />
-
-      {/* Search and Categories */}
-      <section className="py-8 bg-muted/20">
-        <div className="container-custom">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-            {/* Search */}
-            <div className="relative w-full lg:w-96">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-              <Input
-                placeholder="Search articles..."
-                className="pl-10"
-              />
-            </div>
-
-            {/* Categories */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Button key={category} variant="outline" size="sm" className="hover:bg-secondary hover:text-secondary-foreground">
-                  {category}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Post */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold mb-8 text-center">Featured Article</h2>
-            <Card className="overflow-hidden border-0 shadow-large hover:shadow-large transition-all duration-300">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                {/* Image */}
-                <div className={`h-64 lg:h-auto bg-${featuredPost.image} relative`}>
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary/80 flex items-center justify-center">
-                    <div className="text-center text-white p-8">
-                      <Badge className="mb-4 bg-white/20 text-white">{featuredPost.category}</Badge>
-                      <h3 className="text-2xl font-bold">Featured</h3>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <CardContent className="p-8 lg:p-12 flex flex-col justify-center">
-                  <Badge variant="secondary" className="w-fit mb-4">{featuredPost.category}</Badge>
-                  <h3 className="text-2xl lg:text-3xl font-bold mb-4 leading-tight">{featuredPost.title}</h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">{featuredPost.excerpt}</p>
-                  
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <User size={16} />
-                        <span>{featuredPost.author}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Calendar size={16} />
-                        <span>{featuredPost.date}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock size={16} />
-                        <span>{featuredPost.readTime}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button className="w-fit group">
-                    Read Full Article
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </CardContent>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Blog Posts Grid */}
-      <section className="section-padding bg-muted/30">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Latest Articles
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Expert insights and actionable strategies to help you grow your business through better marketing.
+      <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-16">
+        <div className="container mx-auto px-4">
+          {/* Page Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Insights & Resources</h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Stay updated with the latest trends in digital marketing and design
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post, index) => (
-              <Card key={index} className="group overflow-hidden border-0 shadow-soft hover:shadow-large transition-all duration-300 hover:-translate-y-2">
-                {/* Image */}
-                <div className={`h-48 bg-${post.image} relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/60 to-secondary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <Badge className="absolute top-4 left-4 bg-white/90 text-primary">{post.category}</Badge>
+          {/* Search & Filter Bar */}
+          <div className="mb-12">
+            <Card className="shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row gap-4 items-center">
+                  {/* Search Input */}
+                  <div className="relative flex-1 w-full">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      placeholder="Search articles..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
+                  {/* Category Filter */}
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="w-full md:w-48">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Sort Dropdown */}
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-full md:w-32">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sortOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Blog Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {getCurrentPagePosts().map((post) => (
+              <Card key={post.id} className="shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group overflow-hidden">
+                {/* Featured Image */}
+                <div className="aspect-video overflow-hidden">
+                  <img
+                    src={post.featured_image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
 
                 <CardContent className="p-6">
-                  <h3 className="font-semibold text-lg mb-3 leading-tight group-hover:text-secondary transition-colors">
+                  {/* Category Badge */}
+                  <Badge className={`mb-3 ${categoryColors[post.category as keyof typeof categoryColors] || 'bg-gray-100 text-gray-800'}`}>
+                    {post.category}
+                  </Badge>
+
+                  {/* Title */}
+                  <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-200 line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+
+                  {/* Author & Date */}
+                  <div className="flex items-center gap-3 mb-3 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      {post.author_avatar ? (
+                        <img
+                          src={post.author_avatar}
+                          alt={post.author_name}
+                          className="w-6 h-6 rounded-full"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <User className="h-3 w-3 text-primary" />
+                        </div>
+                      )}
+                      <span>{post.author_name}</span>
+                    </div>
+                    <span>•</span>
+                    <span>{formatDate(post.published_date)}</span>
+                  </div>
+
+                  {/* Reading Time */}
+                  <div className="flex items-center gap-1 mb-4 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>{post.reading_time} min read</span>
+                  </div>
+
+                  {/* Excerpt */}
+                  <p className="text-muted-foreground mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
 
-                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-                    <div className="flex items-center space-x-2">
-                      <User size={14} />
-                      <span>{post.author}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Clock size={14} />
-                      <span>{post.readTime}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">{post.date}</span>
-                    <Button variant="ghost" size="sm" className="p-0 h-auto hover:text-secondary">
-                      Read More
-                      <ArrowRight size={14} className="ml-1" />
-                    </Button>
-                  </div>
+                  {/* Read More Link */}
+                  <Button
+                    variant="ghost"
+                    className="p-0 h-auto font-semibold text-primary hover:text-primary/80 group/button"
+                    onClick={() => handleReadMore(post)}
+                  >
+                    Read More
+                    <ArrowRight className="ml-1 h-4 w-4 group-hover/button:translate-x-1 transition-transform" />
+                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg">
-              Load More Articles
-            </Button>
-          </div>
-        </div>
-      </section>
+          {/* No Results */}
+          {filteredPosts.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-xl text-muted-foreground mb-4">No articles found</p>
+              <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
+            </div>
+          )}
 
-      {/* Newsletter Signup */}
-      <section className="section-padding bg-primary text-primary-foreground">
-        <div className="container-custom">
-          <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Never Miss a Marketing Insight
-            </h2>
-            <p className="text-xl text-primary-foreground/90 mb-8">
-              Get the latest marketing strategies, industry trends, and expert tips delivered straight to your inbox every week.
-            </p>
-            
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60 flex-1"
-              />
-              <Button variant="secondary" size="lg" className="px-8">
-                Subscribe
-              </Button>
-            </form>
-            
-            <p className="text-sm text-primary-foreground/70 mt-4">
-              Join 5,000+ marketers who read our weekly newsletter. Unsubscribe anytime.
-            </p>
-          </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Card className="shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  {/* Page Info */}
+                  <p className="text-sm text-muted-foreground">
+                    Showing {(currentPage - 1) * postsPerPage + 1} to{' '}
+                    {Math.min(currentPage * postsPerPage, filteredPosts.length)} of{' '}
+                    {filteredPosts.length} articles
+                  </p>
+
+                  {/* Pagination Controls */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      Previous
+                    </Button>
+
+                    {/* Page Numbers */}
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(pageNum)}
+                          className="w-8 h-8 p-0"
+                        >
+                          {pageNum}
+                        </Button>
+                      ))}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+
+                  {/* Load More for Mobile */}
+                  <div className="sm:hidden w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Load More Articles
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
-      </section>
+      </div>
     </Layout>
   );
 };
