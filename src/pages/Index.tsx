@@ -188,7 +188,7 @@ const Index = () => {
                         whileHover={{ x: 5 }}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       >
-                        <Button variant="ghost" className="group/btn text-secondary hover:text-secondary p-0">
+                        <Button variant="ghost" className="group/btn text-primary hover:text-primary p-0">
                           Learn More
                           <ArrowRight size={16} className="ml-1 group-hover/btn:translate-x-1 transition-transform" />
                         </Button>
