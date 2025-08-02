@@ -1,118 +1,233 @@
 import Layout from '@/components/Layout';
-import HeroSection from '@/components/HeroSection';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ChevronRight, Lightbulb, Target, Handshake, Sparkles, Linkedin, Twitter } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const About = () => {
+  const [counters, setCounters] = useState({
+    experience: 0,
+    projects: 0,
+    clients: 0,
+    awards: 0
+  });
+
   const team = [
     {
       name: 'Sarah Johnson',
-      role: 'Founder & CEO',
-      bio: 'Former VP of Marketing at Fortune 500 companies with 15+ years of experience.',
-      skills: ['Strategy', 'Leadership', 'Growth Hacking']
+      title: 'CEO & Founder',
+      bio: 'Visionary leader with 15+ years in digital marketing. Former VP at Fortune 500 companies, passionate about helping businesses achieve breakthrough growth.',
+      image: 'photo-1581091226825-a6a2a5aee158',
+      linkedin: '#',
+      twitter: '#'
     },
     {
       name: 'Michael Chen',
-      role: 'Creative Director',
-      bio: 'Award-winning designer with expertise in brand identity and digital experiences.',
-      skills: ['Design', 'Branding', 'UX/UI']
+      title: 'Creative Director',
+      bio: 'Award-winning designer who transforms complex ideas into compelling visual stories. Expertise in brand identity and user experience design.',
+      image: 'photo-1581092795360-fd1ca04f0952',
+      linkedin: '#',
+      twitter: '#'
     },
     {
-      name: 'Emily Rodriguez',
-      role: 'Head of Analytics',
-      bio: 'Data scientist turned marketer, specializing in performance optimization.',
-      skills: ['Analytics', 'SEO', 'PPC']
+      name: 'Emma Rodriguez',
+      title: 'Marketing Manager',
+      bio: 'Data-driven marketing strategist specializing in performance optimization and customer acquisition across all digital channels.',
+      image: 'photo-1581091226825-a6a2a5aee158',
+      linkedin: '#',
+      twitter: '#'
     },
     {
       name: 'David Kim',
-      role: 'Content Strategist',
-      bio: 'Storyteller who creates compelling content that converts and engages.',
-      skills: ['Content', 'Copywriting', 'Social Media']
+      title: 'Lead Developer',
+      bio: 'Full-stack developer who builds fast, scalable websites and applications. Expert in modern web technologies and performance optimization.',
+      image: 'photo-1581092795360-fd1ca04f0952',
+      linkedin: '#',
+      twitter: '#'
+    },
+    {
+      name: 'Lisa Thompson',
+      title: 'Brand Strategist',
+      bio: 'Creative strategist who helps brands find their unique voice and positioning. Specialist in brand development and messaging frameworks.',
+      image: 'photo-1581091226825-a6a2a5aee158',
+      linkedin: '#',
+      twitter: '#'
+    },
+    {
+      name: 'Alex Williams',
+      title: 'Social Media Manager',
+      bio: 'Social media expert who builds engaged communities and drives conversions. Specialist in content strategy and influencer partnerships.',
+      image: 'photo-1581092795360-fd1ca04f0952',
+      linkedin: '#',
+      twitter: '#'
     }
   ];
 
   const values = [
     {
-      title: 'Results-Driven',
-      description: 'Every strategy is designed with clear metrics and measurable outcomes in mind.'
-    },
-    {
-      title: 'Client-First',
-      description: 'Your success is our success. We treat your business like our own.'
-    },
-    {
+      icon: Lightbulb,
       title: 'Innovation',
-      description: 'We stay ahead of trends and continuously evolve our approaches.'
+      description: 'We stay ahead of trends and technology'
     },
     {
-      title: 'Transparency',
-      description: 'Open communication and honest reporting at every step of the journey.'
+      icon: Target,
+      title: 'Results-Driven',
+      description: 'Every strategy is built for measurable success'
+    },
+    {
+      icon: Handshake,
+      title: 'Client-First',
+      description: 'Your goals become our mission'
+    },
+    {
+      icon: Sparkles,
+      title: 'Creativity',
+      description: 'We turn ideas into unforgettable experiences'
     }
   ];
 
+  const achievements = [
+    { target: 5, label: 'Years Experience', suffix: '+' },
+    { target: 100, label: 'Projects Completed', suffix: '+' },
+    { target: 50, label: 'Happy Clients', suffix: '+' },
+    { target: 15, label: 'Awards Won', suffix: '+' }
+  ];
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Animate counters
+            achievements.forEach((achievement, index) => {
+              const duration = 2000; // 2 seconds
+              const steps = 50;
+              const increment = achievement.target / steps;
+              let current = 0;
+
+              const timer = setInterval(() => {
+                current += increment;
+                if (current >= achievement.target) {
+                  current = achievement.target;
+                  clearInterval(timer);
+                }
+
+                setCounters(prev => ({
+                  ...prev,
+                  [['experience', 'projects', 'clients', 'awards'][index]]: Math.floor(current)
+                }));
+              }, duration / steps);
+            });
+
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    const achievementsSection = document.getElementById('achievements');
+    if (achievementsSection) {
+      observer.observe(achievementsSection);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <Layout>
-      <HeroSection
-        title="We're More Than Just a Marketing Agency"
-        subtitle="We're your strategic partners in growth, combining creativity with data-driven insights to transform your business into a market leader."
-        variant="minimal"
-        primaryCTA="Meet Our Team"
-        secondaryCTA="Our Story"
-      />
+      {/* Page Hero */}
+      <section className="relative pt-24 pb-16 bg-gradient-to-br from-muted/50 to-background overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-20 left-20 w-32 h-32 border-2 border-primary rounded-full"></div>
+          <div className="absolute top-40 right-32 w-24 h-24 border-2 border-secondary rounded-full"></div>
+          <div className="absolute bottom-20 left-1/3 w-20 h-20 border-2 border-accent rounded-full"></div>
+        </div>
+
+        <div className="container-custom relative z-10">
+          {/* Breadcrumb */}
+          <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-8 animate-fade-in">
+            <a href="/" className="hover:text-secondary transition-colors">Home</a>
+            <ChevronRight size={16} />
+            <span className="text-primary font-medium">About</span>
+          </nav>
+
+          <div className="max-w-4xl">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms]">
+              Meet the Creative Minds Behind Your Success
+            </h1>
+          </div>
+        </div>
+      </section>
 
       {/* Our Story */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+      <section className="section-padding relative overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-1/4 right-10 w-64 h-64 bg-secondary rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 left-10 w-96 h-96 bg-accent rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="container-custom relative z-10">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold mb-8 animate-fade-in">
                 Our Story
               </h2>
-              <div className="space-y-6 text-lg leading-relaxed text-muted-foreground">
-                <p>
-                  Founded in 2019, Yara began with a simple mission: to help businesses cut through the noise and connect meaningfully with their audiences. We saw too many companies struggling with fragmented marketing efforts and unclear results.
-                </p>
-                <p>
-                  Our founders, coming from backgrounds in Fortune 500 marketing and tech startups, combined their expertise to create a different kind of agency—one that prioritizes strategy over tactics and long-term growth over quick wins.
-                </p>
-                <p>
-                  Today, we've helped over 500 businesses transform their marketing approach, generating over $50M in additional revenue for our clients. But we're just getting started.
-                </p>
-              </div>
             </div>
-            <div className="relative">
-              <div className="w-full h-96 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-2xl flex items-center justify-center">
-                <p className="text-center text-muted-foreground">
-                  [Team photo placeholder]
-                </p>
-              </div>
+            
+            <div className="text-2xl lg:text-3xl leading-relaxed text-muted-foreground font-light animate-fade-in [animation-delay:200ms]">
+              "Founded in 2019, we're a passionate team of designers, marketers, and strategists dedicated to helping businesses thrive in the digital world. We believe every brand has a unique story to tell, and we're here to help you tell it beautifully."
             </div>
           </div>
         </div>
       </section>
 
-      {/* Values */}
+      {/* Team Section */}
       <section className="section-padding bg-muted/30">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Our Values
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+              Our Expert Team
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              These principles guide everything we do and shape how we partner with our clients.
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in [animation-delay:200ms]">
+              Meet the talented individuals who bring creativity, strategy, and expertise to every project.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {values.map((value, index) => (
-              <Card key={index} className="border-0 shadow-soft">
-                <CardContent className="p-8">
-                  <h3 className="text-xl font-semibold mb-4 text-primary">
-                    {value.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {value.description}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {team.map((member, index) => (
+              <Card 
+                key={index} 
+                className="group border-0 shadow-soft hover:shadow-large transition-all duration-300 hover:-translate-y-2 animate-fade-in"
+                style={{ animationDelay: `${index * 100 + 400}ms` }}
+              >
+                <CardContent className="p-8 text-center">
+                  {/* Profile Image */}
+                  <div className="w-24 h-24 mx-auto mb-6 relative overflow-hidden rounded-2xl shadow-medium group-hover:shadow-large transition-all duration-300">
+                    <img
+                      src={`https://images.unsplash.com/${member.image}?w=200&h=200&fit=crop&crop=face`}
+                      alt={member.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+
+                  <h3 className="font-semibold text-xl mb-2">{member.name}</h3>
+                  <p className="text-secondary font-medium mb-4">{member.title}</p>
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                    {member.bio}
                   </p>
+
+                  {/* Social Links */}
+                  <div className="flex justify-center space-x-3">
+                    <Button variant="ghost" size="sm" className="w-10 h-10 p-0 rounded-full hover:bg-secondary/10 group/btn">
+                      <Linkedin size={18} className="text-muted-foreground group-hover/btn:text-secondary transition-colors" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="w-10 h-10 p-0 rounded-full hover:bg-secondary/10 group/btn">
+                      <Twitter size={18} className="text-muted-foreground group-hover/btn:text-secondary transition-colors" />
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -120,40 +235,95 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team */}
+      {/* Our Values */}
       <section className="section-padding">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Meet Our Team
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+              Our Values
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Passionate experts who bring diverse skills and fresh perspectives to every project.
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in [animation-delay:200ms]">
+              The principles that guide our work and define our commitment to excellence.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="border-0 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-2">
-                <CardContent className="p-6 text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-full mx-auto mb-6 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-primary">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </span>
+            {values.map((value, index) => {
+              const IconComponent = value.icon;
+              return (
+                <Card 
+                  key={index} 
+                  className="group text-center border-0 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-2 animate-fade-in"
+                  style={{ animationDelay: `${index * 100 + 400}ms` }}
+                >
+                  <CardContent className="p-8">
+                    <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-secondary/20 group-hover:scale-110 transition-all duration-300">
+                      <IconComponent size={32} className="text-secondary" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-4">{value.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {value.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Achievements */}
+      <section id="achievements" className="section-padding bg-primary text-primary-foreground">
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+              Our Achievements
+            </h2>
+            <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto animate-fade-in [animation-delay:200ms]">
+              Numbers that reflect our commitment to excellence and client success.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {achievements.map((achievement, index) => {
+              const currentValue = [counters.experience, counters.projects, counters.clients, counters.awards][index];
+              return (
+                <div 
+                  key={index} 
+                  className="text-center animate-fade-in"
+                  style={{ animationDelay: `${index * 100 + 400}ms` }}
+                >
+                  <div className="text-4xl lg:text-5xl xl:text-6xl font-bold mb-2">
+                    {currentValue}{achievement.suffix}
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{member.name}</h3>
-                  <p className="text-secondary font-medium mb-4">{member.role}</p>
-                  <p className="text-muted-foreground text-sm mb-4">{member.bio}</p>
-                  <div className="flex flex-wrap gap-1 justify-center">
-                    {member.skills.map((skill, skillIndex) => (
-                      <Badge key={skillIndex} variant="secondary" className="text-xs">
-                        {skill}
-                      </Badge>
-                    ))}
+                  <div className="text-primary-foreground/80 font-medium text-lg">
+                    {achievement.label}
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="section-padding">
+        <div className="container-custom">
+          <div className="text-center max-w-4xl mx-auto">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 animate-fade-in">
+              Ready to Work with Our Team?
+            </h2>
+            <p className="text-xl text-muted-foreground mb-8 animate-fade-in [animation-delay:200ms]">
+              Let's discuss your project and discover how our expertise can help you achieve your business goals.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in [animation-delay:400ms]">
+              <Button variant="default" size="xl" className="btn-primary">
+                Start Your Project
+              </Button>
+              <Button variant="outline" size="xl">
+                Schedule a Call
+              </Button>
+            </div>
           </div>
         </div>
       </section>
